@@ -1,0 +1,30 @@
+// Cross platform centering
+.center {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  &:first-child {
+    margin-top: 0;
+  }
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.left {
+  text-align: left;
+  p {
+    text-align: left;
+  }
+}
+
+@import "_variables.scss";
+@import "_pdf.scss";
+@import "_epub_recs.scss";
+@import "_screen_only.scss";
+@import "_epub_only.scss";
+@import "_typography.scss";

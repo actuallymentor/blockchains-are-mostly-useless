@@ -1,0 +1,170 @@
+// ///////////////////////////////
+// Print styling
+// ///////////////////////////////
+// Print order: pretoc, toc, content
+@page {
+  margin: $v-margin $h-margin;
+  size: $page-width $page-height;
+}
+
+
+// ///////////////////////////////
+// General PDF declarations
+// ///////////////////////////////
+// Only show on pdf
+.pdfonly { display: none; }
+
+.pdf {
+  .pdfonly { display: block; }
+}
+
+// ///////////////////////////////
+// PDF Specific styling
+// ///////////////////////////////
+.pdf { 
+
+
+  // Set page-friendly pargins and padding
+  // ul li { 
+  //   padding: 0;
+  // }
+  margin: 0;
+
+  // New page before every h1
+  h1:not(:first-child) { 
+      break-before: page;
+  }
+
+  // Page break before first h2 in the chapter, but only in the content section
+  section.content {
+
+    // H1 chapter starts
+    h1:not(:first-child) {
+
+      // Chapter declaration
+      &:before {
+        content: 'Chapter';
+        font-style: italic;
+        display: block;
+        font-size: 2rem;
+      }
+
+      // Sizing
+      font-size: 2.5rem;
+      line-height: 3rem;
+      padding-bottom: .5rem;
+      // line-height: 3rem;
+      border-bottom: 1px solid black;
+
+      // The first h2 and bold heading should page break
+      // standard chapter:
+      & + p {
+        & + ol + p + ul, & + ul + p + ul, & + ul {
+          & + h2 {
+            break-before: page;
+          }
+        }
+        // & ~ ul + p + ul + h2, & ~ ol ~ ul + h2 {
+        //   page-break-before: always;
+        // }
+      }
+      // Nonstandard (shopping and no intro):
+      & + h2, & + p + h3, & + p + p + figure + h3 {
+          break-before: page;
+      }
+
+    }
+
+    // Heading styling
+    h2 {
+      margin-top: 2rem;
+    }
+    h3, h4 {
+      font-weight: normal;
+      // font-style: italic;
+      font-weight: normal;
+    }
+  }
+  
+  // ///////////////////////////////
+  // Page breaks
+  // ///////////////////////////////
+  h2, h3, h4, h5 {
+
+    & + p {
+      margin-top: .5rem;
+    }
+  
+    // This is not zero because of the pdf page break hack
+    margin-bottom: 0;
+
+    // Hacky solution to non working break after
+    &::after {
+        content: "";
+        display: block;
+        height: 100px;
+        margin-bottom: -100px;
+    }
+
+    break-after: avoid-page;
+    break-inside: avoid-page;
+    & + p {
+      break-before: avoid-page;
+    }
+  }
+  ol, li, table {
+    break-inside: avoid-page;
+    break-after: avoid-page;
+  }
+  // Shopping lists, do break lists
+  h3 + ul, h2 + ul {
+    break-inside: auto;
+  }
+
+  // ///////////////////////////////
+  // Images in the text
+  // ///////////////////////////////
+  $figure-spacing: 4rem;
+  .inline_footnote + figure {
+    margin-top: $figure-spacing;
+  }
+
+  ul + figure {
+    margin-top: $figure-spacing;
+  }
+  figure {
+
+    // Space from figure above me
+    & + figure {
+      margin-top: $figure-spacing;
+    } 
+    
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin: 0;
+    break-inside: avoid-page;
+  }
+
+
+  ////////////////////////
+  /* Table of contents */
+  ////////////////////////
+  .table-of-contents {
+
+    ul {
+      list-style: none;
+      padding: 0;
+      font-size: 0.7rem;
+      li {
+        list-style: none;
+      }
+      ul {
+        padding: 1 2rem;
+      }
+    }
+  }
+}

@@ -1,0 +1,49 @@
+/* Epub recs from https://friendsofepub.github.io/eBookTricks/ */
+
+body {
+  line-height: 1.5;
+}
+
+body * {
+  line-height: inherit;
+}
+
+body {
+  font-kerning: normal;
+  font-variant: common-ligatures oldstyle-nums proportional-nums;
+  font-feature-settings: "kern", "liga", "clig", "onum", "pnum";
+}
+
+h1, h2, h3 {
+  font-variant: common-ligatures lining-nums proportional-nums;
+  font-feature-settings: "kern", "liga", "clig", "lnum", "pnum";
+}
+
+table {
+  font-variant-numeric: lining-nums tabular-nums;
+  font-feature-settings: "kern", "lnum", "tnum";
+}
+
+element {
+  font-variant: small-caps;
+}
+
+a.text-color {
+  color: inherit;
+  -webkit-text-fill-color: inherit;
+}
+
+@media amzn-kf8 {
+  parent a.text-color {
+    color: inherit;
+  }
+}
+
+img {
+  object-fit: contain;
+}
+
+article, aside, figure, figcaption, 
+footer, header, main, nav, section {
+  display: block;
+}

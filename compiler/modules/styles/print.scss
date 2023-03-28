@@ -1,0 +1,49 @@
+@import "_variables.scss";
+
+// Print order: pretoc, toc, content
+// The frst page (chap not toc) is the left 
+@page :left {
+	margin-right: $v-margin*$spine-offset-factor;
+}
+@page :right {
+	margin-left: $h-margin*$spine-offset-factor;
+}
+
+.noprint {
+	display: none;
+}
+
+.pdf {
+
+	&.print {
+
+	// Print version
+	#pdfcover {
+		display: none;
+	}
+
+	#pdftoctitle {
+		margin: 0;
+	}
+
+	.table-of-contents {
+
+		padding: 1rem;
+		ul {
+			font-size: .8rem;
+			ul li { display: none; }
+			li { 
+				margin: 0;
+				padding: 2px 0;
+				}
+			}
+			a {
+			color: black;
+			}
+		}
+		a {
+			color: black;
+		}
+	}
+		
+	}

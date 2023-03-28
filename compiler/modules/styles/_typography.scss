@@ -1,0 +1,126 @@
+@import url('https://fonts.googleapis.com/css?family=PT+Serif:400,400i,700,700i&display=swap&subset=cyrillic,cyrillic-ext,latin-ext');
+@import url('https://fonts.googleapis.com/css?family=PT+Sans:400,400i,700,700i&display=swap&subset=cyrillic,cyrillic-ext,latin-ext');
+$serif: 'PT Serif';
+$sans-serif: 'PT Sans';
+
+html, body {
+	font-size: $font-size;
+	font-family: $serif, serif;
+	font-variant: no-common-ligatures;
+	font-feature-settings: "liga" 0;
+	* {
+		max-width: 100%;
+	}
+}
+
+
+// ///////////////////////////////
+// Links
+// ///////////////////////////////
+a[href]:after { content : ""!important; }
+a {
+	color: lightcoral;
+	text-decoration: none;
+}
+
+// ///////////////////////////////
+// Quotes, lists
+// ///////////////////////////////
+blockquote { 
+	border: none !important;
+	border-left: solid 5px lightcoral!important;
+	padding-left: 10px!important;
+	margin: 1.5rem;
+}
+pre {
+	white-space: pre-wrap
+}
+ul, ol {
+
+	padding-left: 2rem;
+
+	li { 
+		padding: 0;
+		// line-height: 1.3rem;
+	}
+}
+
+// ///////////////////////////////
+// Images and tables
+// ///////////////////////////////
+img, svg, table { width: 100%; max-width: 100%; }
+
+// ///////////////////////////////
+// Headings
+// ///////////////////////////////
+h1, h2, h3, h4 {
+	font-family: $sans-serif, sans-serif;
+	font-weight: 500;
+	font-variant: no-common-ligatures;
+	font-feature-settings: "liga" 0;
+}
+
+h1 {
+	font-size: 1.5rem;
+	margin-top: 0;
+}
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.3rem; }
+h4 { font-size: 1.1rem; }
+
+// ///////////////////////////////
+// Paragraphs
+// ///////////////////////////////
+p, ul, ol, a {
+	font-family: $serif, serif;
+	font-weight: 300;
+	font-variant: no-common-ligatures;
+	font-feature-settings: "liga" 0;
+}
+
+// ///////////////////////////////
+//  Images
+// ///////////////////////////////
+img[src$='.svg'] {
+	box-sizing: border-box; /* To prevent child overflow */
+}
+figcaption {
+	text-align: center;
+    padding: 1rem;
+    font-style: italic;
+}
+
+// ///////////////////////////////
+// Tables
+// ///////////////////////////////
+table {
+	border-collapse: separate; 
+	border-spacing:0 5px;
+	font-size: 0.9rem;
+	width: 100%;
+	margin: 10px 0;
+	tr td {
+  		border-bottom: 1px solid lightgrey;
+	}
+	tr th { 
+		text-align: left;
+		background: lightgrey!important;
+		border-bottom: solid 1px grey;
+		border-collapse: separate; 
+		border-spacing: 5px 5px;
+	}
+}
+
+/*Footnotes*/
+.footnote-ref { 
+  padding: 0 2px;
+}
+.inline_footnote {
+  font-size: 0.9rem;
+  padding-left: 10%;
+  padding-right: 10%;
+  font-style: italic;
+}
+.inline_sup {
+  margin-right: 5px;
+}
