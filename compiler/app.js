@@ -8,13 +8,13 @@ const { verbose, dirty } = process.env
 // Book Meta
 const getmeta = async path => ( 
 	{ 
-		title: 'Nothing Burger',
+		title: 'Blockchain stuff working title',
 		author: 'Mentor Palokaj',
 		publisher: 'Mentor Palokaj',
-		url: "https://nothingburgerbook.com/#buyingoptions",
+		url: "https://noneyet.com",
 		email: {
-			from: 'mentor@nothingburgerbook.com',
-			replyto: 'mentor@nothingburgerbook.com'
+			from: 'mentor@palokaj.co',
+			replyto: 'mentor@palokaj.co'
 		},
 		css: await fs.readFile( path.css, 'utf8' ),
 		csspath: path.css,
