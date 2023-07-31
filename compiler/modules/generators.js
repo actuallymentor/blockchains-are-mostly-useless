@@ -1,13 +1,16 @@
 import { promises as fs } from 'fs'
-import { exec } from 'child_process'
+import { exec, execSync } from 'child_process'
 import epub from 'epub-gen'
 import pdf from 'html5-to-pdf'
 import { createObjectCsvWriter as createCsvWriter } from 'csv-writer'
 
 const { verbose, debug } = process.env
-const chrome_path = `/Applications/Google Chrome.app/Contents/MacOS/Google Chrome`
-const chromium_path = `/usr/local/bin/chromium` // output of which chromium
-const browser_path = chrome_path || chromium_path
+// const chrome_path = `/Applications/Google Chrome.app/Contents/MacOS/Google Chrome`
+const automated_chromium_path = execSync( `which chromium || which chromium-browser || true` ).toString().trim()
+const automated_chrome_path = execSync( `which google-chrome || true` ).toString().trim()
+const manual_chromium_path = `/usr/local/bin/chromium` // output of which chromium
+const browser_path = automated_chromium_path || automated_chrome_path || manual_chromium_path
+if( verbose ) console.log( 'Using browser path: ', browser_path, `based on chromium path ${ automated_chromium_path }, chrome path ${ automated_chrome_path }` )
 
 export const makeEpub = async ( content, meta, output ) => new epub( {
 	...meta,
@@ -49,7 +52,7 @@ export const makeToc = ( tocHtml, meta, output ) => {
 		include: [ meta.csspath, meta.printcsspath ],
 		templatePath: meta.root,
 		launchOptions:{
-			executablePath: chromium_path
+			executablePath: browser_path
 		},
 		// Puppeteer pdf defs
 		pdf: {
