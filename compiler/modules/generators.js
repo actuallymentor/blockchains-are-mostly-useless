@@ -5,7 +5,9 @@ import pdf from 'html5-to-pdf'
 import { createObjectCsvWriter as createCsvWriter } from 'csv-writer'
 
 const { verbose, debug } = process.env
-const chromium_path = `/opt/homebrew/bin/chromium` // output of which chromium
+const chrome_path = `/Applications/Google Chrome.app/Contents/MacOS/Google Chrome`
+const chromium_path = `/usr/local/bin/chromium` // output of which chromium
+const browser_path = chrome_path || chromium_path
 
 export const makeEpub = async ( content, meta, output ) => new epub( {
 	...meta,
@@ -92,7 +94,7 @@ export const makePdfs = async ( content, meta, output ) => {
 		templatePath: meta.root,
 		// Puppeteer options
 		launchOptions:{
-			executablePath: chromium_path
+			executablePath: browser_path
 		},
 		// Puppeteer pdf defs
 		pdf: {
@@ -158,8 +160,8 @@ export const mergePdfs = ( output, meta ) => new Promise( ( resolve, reject ) =>
 	// Merge the pdfs with ghosescript
 	const run = exec( `${command} ${ args }` )
 	run.on( 'exit', code => {
-		if( code == 0 ) return resolve()
-		reject()
+		if( code == 0 ) return resolve() 
+		reject( `Ghostscript failed to perge PDFs, exit code: `, code )
 	} )
 
 } )

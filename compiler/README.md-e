@@ -2,7 +2,7 @@
 
 **KNOWN ISSUE:** Commas in headings break CSV.
 
-**KNOWN ISSUE:** PDF generation is broken on ARM. Make sure to `brew install chromium` and and run `npm run fix:puppeteer` which replaces "/usr/local/bin/chromium" to `which chromium` value in `node_modules/puppeteer/lib/esm/puppeteer/node/Launcher.js` and `./node_modules/puppeteer/lib/cjs/puppeteer/node/Launcher.js`.
+**KNOWN ISSUE:** PDF generation is broken on ARM. Make sure to `brew install chromium` and and run `npm run fix:puppeteer` which replaces "/usr/bin/chromium-browser" to `which chromium` value in `node_modules/puppeteer/lib/esm/puppeteer/node/Launcher.js` and `./node_modules/puppeteer/lib/cjs/puppeteer/node/Launcher.js`.
 
 Multimarkdown to epub and pdf.
 

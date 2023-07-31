@@ -17,33 +17,33 @@
 
 	&.print {
 
-	// Print version
-	#pdfcover {
-		display: none;
-	}
+		// Print version
+		#pdfcover {
+			display: none;
+		}
 
-	#pdftoctitle {
-		margin: 0;
-	}
+		#pdftoctitle {
+			margin: 0;
+		}
 
-	.table-of-contents {
+		.table-of-contents {
 
-		padding: 1rem;
-		ul {
-			font-size: .8rem;
-			ul li { display: none; }
-			li { 
-				margin: 0;
-				padding: 2px 0;
+			padding: 1rem;
+			ul {
+				font-size: .8rem;
+				ul li { display: none; }
+				li { 
+					margin: 0;
+					padding: 2px 0;
+					}
+				}
+				a {
+				color: black;
 				}
 			}
 			a {
-			color: black;
+				color: black;
 			}
 		}
-		a {
-			color: black;
-		}
-	}
 		
 	}
