@@ -49,4 +49,9 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          path: build/*
+          path: |
+            build/Blockchains are mostly useless-print.pdf
+            build/Blockchains are mostly useless-digital.pdf
+            build/Blockchains are mostly useless.epub
+            build/Blockchains are mostly useless.html
+            build/*.csv
