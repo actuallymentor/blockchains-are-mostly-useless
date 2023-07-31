@@ -28,6 +28,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version-file: "compiler/.nvmrc"
+          cache-dependency-path: "compiler/package-lock.json"
           cache: "npm"
 
       - name: Install node dependencies
