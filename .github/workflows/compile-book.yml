@@ -46,23 +46,7 @@ jobs:
         run: rm *-{pretoc,toc,content}.pdf
         working-directory: build
 
-      - name: Zip the built files
-        run: zip -r build.zip build
-
-      - name: Create New Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Automatic build
-          body: Built from ${{ github.ref }}, hash (${{ github.sha }})
-          draft: false
-          prerelease: false
-
-      - name: Upload Release Assets
-        id: upload-release-assets
-        uses: softprops/action-gh-release@v1
-        with:
-          files: build/*
+          path: build/*
