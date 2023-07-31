@@ -47,26 +47,8 @@ jobs:
         working-directory: build
 
       # Artifact uploads
-      - name: Upload print pdf
-        uses: actions/upload-artifact@v2
-        with:
-          name: Blockchains are mostly useless - print - ${GITHUB_SHA}.pdf
-          path: build/Blockchains are mostly useless-print.pdf
-      
-      - name: Upload digital pdf
-        uses: actions/upload-artifact@v2
-        with:
-          name: Blockchains are mostly useless - digital - ${GITHUB_SHA}.pdf
-          path: build/Blockchains are mostly useless-digital.pdf
-
-      - name: Upload epub
-        uses: actions/upload-artifact@v2
-        with:
-          name: Blockchains are mostly useless - ${GITHUB_SHA}.epub
-          path: build/Blockchains are mostly useless.epub
-
       - name: Upload all build artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: All build artifacts ${GITHUB_SHA}
+          name: Blockchains are mosely useless ${{ github.sha }}
           path: build
