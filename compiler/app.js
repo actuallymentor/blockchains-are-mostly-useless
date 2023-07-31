@@ -8,7 +8,7 @@ const { verbose, dirty } = process.env
 // Book Meta
 const getmeta = async path => ( 
 	{ 
-		title: 'Blockchain stuff working title',
+		title: 'Blockchains are mostly useless',
 		author: 'Mentor Palokaj',
 		publisher: 'Mentor Palokaj',
 		url: "https://noneyet.com",
@@ -37,10 +37,10 @@ const path = {
 
 const config = {
 	tocHeadings: [
-		{ match: 'Fasting means no calories for a while', heading: 'Basic fasting science' },
-		{ match: 'Tracking your progress during a fast', heading:'Preparing for your fast' },
-		{ match: 'Playbook day -2 and -1', heading: 'Day by day playbook' },
-		{ match: 'Time restricted feeding', heading: 'Fasting in the rest of your life' }
+		// { match: 'Fasting means no calories for a while', heading: 'Basic fasting science' },
+		// { match: 'Tracking your progress during a fast', heading:'Preparing for your fast' },
+		// { match: 'Playbook day -2 and -1', heading: 'Day by day playbook' },
+		// { match: 'Time restricted feeding', heading: 'Fasting in the rest of your life' }
 	],
 	freeChapters: [ '# Fasting is possibly healthy', '# Pre-fasting shopping list', '# Playbook day -2 and -1' ],
 	premiumDripAresId: 6,
