@@ -36,7 +36,7 @@ jobs:
         working-directory: compiler
 
       - name: Install cli dependencies
-        run: sudo apt install -y ghostscript
+        run: sudo apt update && sudo apt install -y ghostscript
 
       - name: Build book
         run: debug=true npm start
