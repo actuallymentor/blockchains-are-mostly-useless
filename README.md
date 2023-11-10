@@ -1,6 +1,6 @@
 # Blockchains are mostly useless
 
-<img src="./assets/cover.png" width="300px" align="left" style="width: 300px; padding-right: 20px;">
+<img src="./assets/cover.png" width="300px" align="right" style="width: 300px; padding-left: 20px;">
 
 This book concisely covers why blockchains are unsuited to most tasks, and in which cases they can be useful. It is available for free in a digital format, and for sale on Amazon as a paperback.
 
