@@ -57,8 +57,8 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
-        fail_on_unmatched_files: true
         with:
+          fail_on_unmatched_files: true
           files: |
             build/*-digital.pdf
             build/*.epub
