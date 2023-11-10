@@ -1,5 +1,9 @@
 name: Build book and make release
 
+# Set permissions for this action
+permissions:
+  contents: write
+
 # Only trigger on push and only for frontend files
 on:
   
