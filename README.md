@@ -4,10 +4,10 @@
 
 This book concisely covers why blockchains are unsuited to most tasks, and in which cases they can be useful. It is available for free in a digital format, and for sale on Amazon as a paperback.
 
-✉️ Click here to get the latest pdf & epub in your email<br />
-📚 Click here to view the Amazon paperback page
+<a href="#">✉️ Click here to get the latest pdf & epub in your email</a><br />
+<a href="#">📚 Click here to view the Amazon paperback page</a>
 
-You can also find the raw files in the release section of this repository.
+Alternatively, you can also find the publishing history and the associated files in the [release](https://github.com/actuallymentor/blockchains-are-mostly-useless/releases/) section of this repository.
 
 ## The goal of this book
 
