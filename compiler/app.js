@@ -21,9 +21,9 @@ const getmeta = async path => (
 		printcsspath: path.printcsspath,
 		root: path.source,
 		// root: await fs.realpath( __dirname ),
-		cover: `${__dirname}/../assets/cover.jpg`,
+		cover: `${__dirname}/../assets/cover.png`,
 		verbose: false
-	 }
+	}
 )
 
 const path = {
