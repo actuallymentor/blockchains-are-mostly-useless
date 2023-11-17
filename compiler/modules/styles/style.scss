@@ -26,6 +26,21 @@
   }
 }
 
+// Cross platform images
+.img-50-right {
+  width: 50%;
+  margin-left: 2rem;
+  float: right;
+  padding: 1rem;
+}
+
+.img-50-left {
+  width: 50%;
+  margin-right: 2rem;
+  float: left;
+  padding: 1rem;
+}
+
 @import "_variables.scss";
 @import "_pdf.scss";
 @import "_epub_recs.scss";

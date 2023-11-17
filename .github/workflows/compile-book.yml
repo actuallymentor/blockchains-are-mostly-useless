@@ -65,4 +65,5 @@ jobs:
           fail_on_unmatched_files: true
           files: |
             build/*-digital.pdf
+            build/*-print.pdf
             build/*.epub
