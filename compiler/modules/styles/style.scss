@@ -31,14 +31,14 @@
   width: 50%;
   margin-left: 2rem;
   float: right;
-  padding: 1rem;
+  padding: .5rem 0 .5rem .5rem;
 }
 
 .img-50-left {
   width: 50%;
   margin-right: 2rem;
   float: left;
-  padding: 1rem;
+  padding: .5rem .5rem .5rem 0;
 }
 
 @import "_variables.scss";

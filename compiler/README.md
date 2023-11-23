@@ -1,5 +1,7 @@
 # book-compiler
 
+Book cover type: paperback, b&w, cream, left to right, inches, 6x9. See [cover calculator](https://kdp.amazon.com/en_US/cover-templates).
+
 **KNOWN ISSUE:** Commas in headings break CSV.
 
 **KNOWN ISSUE:** PDF generation is broken on ARM. Make sure to `brew install chromium` and and run `npm run fix:puppeteer` which replaces "/usr/local/bin/chromium" to `which chromium` value in `node_modules/puppeteer/lib/esm/puppeteer/node/Launcher.js` and `./node_modules/puppeteer/lib/cjs/puppeteer/node/Launcher.js`.
