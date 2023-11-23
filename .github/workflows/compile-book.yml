@@ -55,7 +55,11 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: Blockchains are mosely useless ${{ github.sha }}
-          path: build
+          path: |
+            build/*-digital.pdf
+            build/*-print.pdf
+            build/*.epub
+            build/*.csv
 
       # Create a new release with the current tag
       - name: Release
