@@ -11,7 +11,7 @@ const getmeta = async path => (
 		title: 'Blockchains are mostly useless',
 		author: 'Mentor Palokaj',
 		publisher: 'Mentor Palokaj',
-		url: "https://noneyet.com",
+		url: "https://github.com/actuallymentor/blockchains-are-mostly-useless/",
 		email: {
 			from: 'mentor@palokaj.co',
 			replyto: 'mentor@palokaj.co'
@@ -31,7 +31,7 @@ const path = {
 	css: resolve( `${__dirname}/modules/style.css` ),
 	printsass: resolve( `${__dirname}/modules/styles/print.scss` ),
 	printcsspath: resolve( `${__dirname}/modules/print.css` ),
-	source: resolve( `${ __dirname }/..` ),
+	source: resolve( `${ __dirname }/../book` ),
 	build: resolve( `${ __dirname }/../build` )
 }
 
