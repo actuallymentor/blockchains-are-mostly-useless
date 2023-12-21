@@ -1,6 +1,6 @@
 # Blockchains are mostly useless
 
-<img src="./assets/cover.png" width="300px" align="right" style="width: 300px; padding-left: 20px;">
+<img src="./assets/cover512.png" width="300px" align="right" style="width: 300px; padding-left: 20px;">
 
 This book concisely covers why blockchains are unsuited to most tasks, and in which cases they can be useful. It is available for free in a digital format, and for sale on Amazon as a paperback.
 
@@ -8,6 +8,18 @@ This book concisely covers why blockchains are unsuited to most tasks, and in wh
 - <a href="#">📚 Click here to view the Amazon paperback page</a>
 
 Alternatively, you can also find the publishing history and the associated files in the [release](https://github.com/actuallymentor/blockchains-are-mostly-useless/releases/) section of this repository.
+
+> This book offers a unique perspective essential for both enthusiasts and skeptics of blockchain technology. Regardless of personal beliefs, it provides context and enhances understanding, making it a must-read.
+>
+> *~ Rudy Dogum* of the [Wholesone Crypto Podcast](https://www.wholesomecrypto.com/)
+
+> As someone involved in the blockchain industry, I know how hard it is to critique our foundational technology. This book effectively communicates that blockchain technology isn't a universal solution; rather, it's a tool with specific use cases. 
+> 
+> *~ Werner Hoffman* of [Pekuna advisory](https://pekuna.de/homepage)
+
+> This book is for those that want to learn more about blockchains, but don’t know where to start. Mentor will help you realize you know very little and then give you the tools to explore this mostly unknown world by yourself.
+>
+> *~ Liesbeth van den Berg* of the [Proof of Attendance Protocol](https://poap.xyz)
 
 ## The goal of this book
 
