@@ -23,7 +23,7 @@ const publisher = async ( input, output, meta, config ) => {
 
 		// Make htmls
 		const [ epubHtml, pdfHtmls, fullDripCsvHtml, freeDripCsvHtml ] = await Promise.all( [
-			dry || taim( 'Make epub html', makeEpubHtml( strings, input ) ),
+			dry || taim( 'Make epub html', makeEpubHtml( strings, input, meta ) ),
 			dry || taim( 'Make pdf html', makePdfHtmls( meta, strings, input, output ) ),
 			dry || taim( 'Make email html', makeEmailHtml( strings, undefined, [ 'Free stuff notice', '[[TOC]]', '# How to read this book' ] ) ),
 			dry || taim( 'Make free email html', makeEmailHtml( strings, freeChapters ) )

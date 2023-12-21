@@ -20,6 +20,7 @@ const getmeta = async path => (
 		csspath: path.css,
 		printcsspath: path.printcsspath,
 		root: path.source,
+		asset_path: `${__dirname}/../assets`,
 		// root: await fs.realpath( __dirname ),
 		cover: `${__dirname}/../assets/cover.png`,
 		verbose: false
@@ -83,7 +84,7 @@ export default Promise.all( [
 .then( f => getmeta( path ) )
 // Read and transform the book
 .then( meta => {
-	if( verbose ) console.log( 'Start book transforms' )
+	if( verbose ) console.log( 'Start book transforms with' )
 	return publish( path.source, path.build, meta, config )
 } )
 // Feedback

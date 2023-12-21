@@ -6,11 +6,11 @@ import { inlineSource } from 'inline-source'
 const { verbose } = process.env
 
 // Convert MD strings to html and return them in a format friendly to the eoub module { data: <html> }
-export const makeEpubHtml = async ( mdstrs, sourcepath ) => {
+export const makeEpubHtml = async ( mdstrs, sourcepath, meta ) => {
 
 	if( verbose ) console.log( 'START: Making epub html' )
 
-	let assetPath = await fs.realpath( `${sourcepath}/assets` )
+	let assetPath = await fs.realpath( meta.asset_path || `${sourcepath}/assets` )
 	let htmlarray = mdstrs.map( mdstr => {
 		// Generate chapter title from the first h1
 		let title = mdstr.match( /(?<=# ).*/ )
@@ -24,7 +24,7 @@ export const makeEpubHtml = async ( mdstrs, sourcepath ) => {
 			// Also disabled .replace( 'href="#fn', 'epub:type="noteref" href="#' ) because iBooks is a bitch
 			data: epubMarkdown.render( mdstr ).replace( new RegExp( /\.\/assets/, 'g'), `file://${ assetPath }` )
 		}
-	 } )
+	} )
 
 	if( verbose ) console.log( 'END: Epub html done' )
 
