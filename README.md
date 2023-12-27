@@ -13,7 +13,7 @@ Alternatively, you can also find the publishing history and the associated files
 
 > This book offers a unique perspective essential for both enthusiasts and skeptics of blockchain technology. Regardless of personal beliefs, it provides context and enhances understanding, making it a must-read.
 >
-> ~ Rudy Dogum of the [Wholesone Crypto Podcast](https://www.wholesomecrypto.com/)
+> ~ Rudy Dogum of the [Wholesome Crypto Podcast](https://www.wholesomecrypto.com/)
 
 > As someone involved in the blockchain industry, I know how hard it is to critique our foundational technology. This book effectively communicates that blockchain technology isn't a universal solution; rather, it's a tool with specific use cases. 
 > 
