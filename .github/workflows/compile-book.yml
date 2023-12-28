@@ -16,6 +16,7 @@ on:
 
 
 jobs:
+
   build:
     name: Compile Book
 
@@ -63,7 +64,7 @@ jobs:
             build/*.epub
             build/*.csv
 
-      # Create a new release with the current tag
+      # If this run was triggered by a tag, create a release
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
