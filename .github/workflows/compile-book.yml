@@ -64,6 +64,7 @@ jobs:
             build/*-print.pdf
             build/*.epub
             build/*.csv
+            build/*.sql
 
       # If this run was triggered by a tag, create a release
       - name: Release

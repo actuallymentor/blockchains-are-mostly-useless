@@ -38,14 +38,11 @@ const path = {
 
 const config = {
 	tocHeadings: [
-		// { match: 'Fasting means no calories for a while', heading: 'Basic fasting science' },
-		// { match: 'Tracking your progress during a fast', heading:'Preparing for your fast' },
-		// { match: 'Playbook day -2 and -1', heading: 'Day by day playbook' },
-		// { match: 'Time restricted feeding', heading: 'Fasting in the rest of your life' }
+		// { match: 'string', heading: 'string' }
 	],
-	freeChapters: [ '# Fasting is possibly healthy', '# Pre-fasting shopping list', '# Playbook day -2 and -1' ],
-	premiumDripAresId: 6,
-	freeDripAresId: 5
+	freeChapters: [],
+	premiumDripAresId: 9,
+	freeDripAresId: 5 // Not using this for this book
 }
 
 const sassify = async ( infile, outfile ) => {

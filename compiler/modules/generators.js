@@ -191,7 +191,7 @@ export const courseTemplate = ( entry, meta ) => `
 			<li>Some emails will be short, others much longer. Most are 1-6 minutes.</i>
 			<li>You can <a href="[webversion]">read this email in your browser</a></li>
 			<li>It's ok to forward this email, it's not tied back to your purchase</li>
-			<li>If you have any questions, ask me anything on <a href='http://twitter.com/home?status=${encodeURI( '@actuallymentor I have a question: ' )}'>Twitter</a> or reply to this email.</li>
+			<li>If you have any questions, ask me anything on <a href='http://twitter.com/actuallymentor'>Twitter</a> or reply to this email.</li>
 		</ul>
 
 		<hr />
