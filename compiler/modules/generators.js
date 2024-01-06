@@ -307,7 +307,7 @@ export const makeEmailCsv = ( htmls, meta, output, template, aresid ) => {
 	// Sendy structured records
 	let records = htmls.map( ( entry, i ) => ( {
 		...defEntry,
-		title: `${ entry.title.trim() } (${Math.ceil( entry.html.split(' ').length / 150 )} minute read)`,
+		title: Buffer.from( `${ entry.title.trim() } (${Math.ceil( entry.html.split(' ').length / 150 )} minute read)`.trim() ).toString('base64'),
 		html: Buffer.from( template( entry, meta ).trim() ).toString('base64'),
 		timing: `+${i} days`
 	} ) )
