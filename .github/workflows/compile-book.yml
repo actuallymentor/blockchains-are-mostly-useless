@@ -58,9 +58,9 @@ jobs:
       - name: Use calibre to rebuild the epub, and make a mobi
         run: |
           mv "Blockchains are mostly useless.epub" "Blockchains are mostly useless-raw.epub"
-          ebook-convert "build/Blockchains are mostly useless-raw.epub" "build/Blockchains are mostly useless.epub"
-          ebook-convert "build/Blockchains are mostly useless-raw.epub" "build/Blockchains are mostly useless.mobi"
-          rm "build/Blockchains are mostly useless-raw.epub"
+          ebook-convert "Blockchains are mostly useless-raw.epub" "Blockchains are mostly useless.epub"
+          ebook-convert "Blockchains are mostly useless-raw.epub" "Blockchains are mostly useless.mobi"
+          rm "Blockchains are mostly useless-raw.epub"
         working-directory: build
 
       # Artifact uploads
