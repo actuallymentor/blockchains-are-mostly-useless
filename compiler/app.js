@@ -22,6 +22,7 @@ const getmeta = async path => (
 		root: path.source,
 		asset_path: `${__dirname}/../assets`,
 		asset_prefix: '../assets', // Used in search replace of the markdown
+		sendy_book_asset_path: 'https://mail.palokaj.co/uploads/blockchains-are-mostly-useless/assets/',
 		// root: await fs.realpath( __dirname ),
 		cover: `${__dirname}/../assets/cover.png`,
 		verbose: false

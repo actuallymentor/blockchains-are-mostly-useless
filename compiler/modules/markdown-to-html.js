@@ -76,7 +76,7 @@ export const makePdfHtmls = async ( meta, mdstrs, input, output ) => {
 	return [ inlinedPreToc, inlinedContent, inlinedFullHtml ]
 }
 
-export const makeEmailHtml = async ( mdstrs, filterInArray, filterOutArray ) => {
+export const makeEmailHtml = async ( mdstrs, filterInArray, filterOutArray, meta ) => {
 
 	if( verbose ) console.log( 'START: Making email htmls' )
 
@@ -142,7 +142,7 @@ export const makeEmailHtml = async ( mdstrs, filterInArray, filterOutArray ) => 
 		html: footnoteSingle( {
 			data: emailMarkdown
 					.render( paragraph[2] )
-					.replace( new RegExp( /\.\/assets/, 'g'), `https://smartworkbeatshardwork.com/release/assets` )
+					.replace( new RegExp( meta.asset_prefix || './assets/', 'g'), meta.sendy_book_asset_path )
 		} ).data
 	} ) )
 
