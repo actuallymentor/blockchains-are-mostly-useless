@@ -1,6 +1,6 @@
 # Everything went ok!
 
-You can check your inbox now.
+You can check your inbox now :)
 
 > In case you're like "gee, this website looks really weird": the writing of this book was documented on [git](https://en.wikipedia.org/wiki/Git), which means you can see the history of the writing of this book publicly.
 > 
