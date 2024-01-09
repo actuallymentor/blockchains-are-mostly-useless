@@ -44,7 +44,7 @@ jobs:
         working-directory: compiler
 
       - name: Install cli dependencies
-        run: sudo apt update && sudo apt install -y ghostscript
+        run: sudo apt update && sudo apt install -y ghostscript calibre
 
       - name: Build book
         run: debug=true npm start
@@ -52,6 +52,15 @@ jobs:
 
       - name: Clean up temp files
         run: rm *-{pretoc,toc,content}.pdf
+        working-directory: build
+      
+      # Use calibre to rebuild the epub and mobi, this fixes a bunch of technical issues causing compatibility issues
+      - name: Use calibre to rebuild the epub, and make a mobi
+        run: |
+          mv "Blockchains are mostly useless.epub" "Blockchains are mostly useless-raw.epub"
+          ebook-convert "build/Blockchains are mostly useless-raw.epub" "build/Blockchains are mostly useless.epub"
+          ebook-convert "build/Blockchains are mostly useless-raw.epub" "build/Blockchains are mostly useless.mobi"
+          rm "build/Blockchains are mostly useless-raw.epub"
         working-directory: build
 
       # Artifact uploads

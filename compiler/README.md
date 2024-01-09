@@ -12,10 +12,7 @@ Multimarkdown to epub and pdf.
 
 For importing, conversing and deleting into SQL:
 
-1. `onlycsv=true npm start`
-1. `scp ../build/emails-*.csv root@mail.palokaj.co:/root`
-1. `ssh root@mail.palokaj.co`
-1. `mysql`
+1. `mysql --local-infile=1 -u root -p'YOUR_DATABASE_PASSWORD'`
 1. `use sendy_mail`
 1. SQL magic
 

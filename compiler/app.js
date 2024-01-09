@@ -21,6 +21,7 @@ const getmeta = async path => (
 		printcsspath: path.printcsspath,
 		root: path.source,
 		asset_path: `${__dirname}/../assets`,
+		asset_prefix: '../assets', // Used in search replace of the markdown
 		// root: await fs.realpath( __dirname ),
 		cover: `${__dirname}/../assets/cover.png`,
 		verbose: false

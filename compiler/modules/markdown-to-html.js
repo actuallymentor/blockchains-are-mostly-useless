@@ -14,6 +14,10 @@ export const makeEpubHtml = async ( mdstrs, sourcepath, meta ) => {
 	let htmlarray = mdstrs.map( mdstr => {
 		// Generate chapter title from the first h1
 		let title = mdstr.match( /(?<=# ).*/ )
+
+		// Make asset regex based on the meta.asset_prefix, or use ./assets/ as default
+		const asset_replace_regex = new RegExp( meta.asset_prefix || './assets/', 'g' )
+
 		return {
 			// If a title exists apply it
 			title: title ? title[0] : false,
@@ -22,7 +26,7 @@ export const makeEpubHtml = async ( mdstrs, sourcepath, meta ) => {
 			// Exclude the first h1 from the chapter content because epub shows the title
 			// Disabled the .replace( /(?<=^# ).*/, '' ) this since specifying appendChapterTitles: false
 			// Also disabled .replace( 'href="#fn', 'epub:type="noteref" href="#' ) because iBooks is a bitch
-			data: epubMarkdown.render( mdstr ).replace( new RegExp( /\.\/assets/, 'g'), `file://${ assetPath }` )
+			data: epubMarkdown.render( mdstr ).replace( asset_replace_regex, `file://${ assetPath }` )
 		}
 	} )
 
