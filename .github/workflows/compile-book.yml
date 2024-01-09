@@ -72,8 +72,8 @@ jobs:
             build/*-digital.pdf
             build/*-print.pdf
             build/*.epub
+            build/*.mobi
             build/*.csv
-            build/*.sql
 
       # If this run was triggered by a tag, create a release
       - name: Release
@@ -85,3 +85,4 @@ jobs:
             build/*-digital.pdf
             build/*-print.pdf
             build/*.epub
+            build/*.mobi
