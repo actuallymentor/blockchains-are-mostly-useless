@@ -23,6 +23,12 @@ Alternatively, you can also find the publishing history and the associated files
 >
 > ~ Liesbeth van den Berg of the [Proof of Attendance Protocol](https://poap.xyz)
 
+> @ActuallyMentor is one of the brightest and most aligned people in the cryptocurrency space. I recommend his book with all of my credibility, because he's just THAT good. ~ [@superphiz of EthStaker on Twitter](https://twitter.com/superphiz/status/1748368730545934686)
+
+
+Tweets from readers:
+
+
 ## The goal of this book
 
 > 💡 This is an exerpt from the first chapter of the book
