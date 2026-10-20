@@ -84,7 +84,7 @@ jobs:
           curl -sSfL -o epubcheck.zip "https://github.com/w3c/epubcheck/releases/download/v${EPUBCHECK_VERSION}/epubcheck-${EPUBCHECK_VERSION}.zip"
           unzip -q epubcheck.zip -d "${RUNNER_TEMP}"
           rm epubcheck.zip
-          java -jar "${RUNNER_TEMP}/epubcheck-${EPUBCHECK_VERSION}/epubcheck.jar" *.epub
+          java -jar "${RUNNER_TEMP}/epubcheck-${EPUBCHECK_VERSION}/epubcheck.jar" ./*.epub
 
       - name: Upload book files
         uses: actions/upload-artifact@v7
