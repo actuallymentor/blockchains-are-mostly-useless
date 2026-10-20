@@ -1,0 +1,11 @@
+{
+	"name": "Book",
+	"build": { "dockerfile": "Dockerfile" },
+	"postCreateCommand": "cd compiler && npm ci",
+	"forwardPorts": [ 13000 ],
+	"customizations": {
+		"vscode": {
+			"extensions": [ "dbaeumer.vscode-eslint", "yzhang.markdown-all-in-one" ]
+		}
+	}
+}

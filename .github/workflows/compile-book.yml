@@ -1,88 +1,126 @@
-name: Build book and make release
+name: Build book
 
-# Set permissions for this action
-permissions:
-  contents: write
-
-# Only trigger on push and only for frontend files
+# main and pull requests get a checked build, v* tags also get a GitHub release
 on:
-  
-  # Trigger on push to master (edge case, local merge)
   push:
     branches:
       - main
     tags:
       - 'v*'
+  pull_request:
+  workflow_dispatch:
 
+# Read-only by default, only the release job may write
+permissions:
+  contents: read
+
+# A newer push to the same branch supersedes the running build
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  EPUBCHECK_VERSION: 5.4.0
 
 jobs:
 
   build:
-    name: Compile Book
+    name: Compile and check
+    # Pinned rather than ubuntu-latest so ghostscript and poppler don't shift under the book
+    runs-on: ubuntu-24.04
 
-    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: compiler
 
     steps:
 
-      # Clones repo to the commit that triggered the event
-      - name: Cloning repository
-        uses: actions/checkout@v3
+      # Full history: the version stamp comes from git tags, the "last edit" from the last commit
+      - name: Check out repository
+        uses: actions/checkout@v7
         with:
-          fetch-tags: true
           fetch-depth: 0
 
-      # Set up node
-      - name: Set up frontend Node.js (.nvmrc)
-        uses: actions/setup-node@v3
+      - name: Set up Node.js (.nvmrc)
+        uses: actions/setup-node@v7
         with:
-          node-version-file: "compiler/.nvmrc"
-          cache-dependency-path: "compiler/package-lock.json"
-          cache: "npm"
+          node-version-file: compiler/.nvmrc
+          cache: npm
+          cache-dependency-path: compiler/package-lock.json
 
-      - name: Install node dependencies
-        run: npm i
-        working-directory: compiler
+      # ghostscript makes the grayscale print pdf, poppler-utils powers npm run verify
+      - name: Install system tools
+        run: sudo apt-get update && sudo apt-get install -y ghostscript poppler-utils
 
-      - name: Install cli dependencies
-        run: sudo apt update && sudo apt install -y ghostscript calibre
+      # Ubuntu 24.04 blocks the user namespaces the Chrome sandbox needs
+      - name: Allow the Chrome sandbox
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+
+      # Vivliostyle downloads its pinned Chrome build once
+      - name: Cache Vivliostyle browser
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/vivliostyle
+          key: vivliostyle-${{ runner.os }}-${{ hashFiles('compiler/package-lock.json') }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm test
 
       - name: Build book
-        run: debug=true npm start
-        working-directory: compiler
+        run: npm start
 
-      - name: Clean up temp files
-        run: rm *-{pretoc,toc,content}.pdf
+      - name: Verify pdfs
+        run: npm run verify
+
+      - name: Validate epub (EPUBCheck ${{ env.EPUBCHECK_VERSION }})
         working-directory: build
-      
-      # Use calibre to rebuild the epub and mobi, this fixes a bunch of technical issues causing compatibility issues
-      - name: Use calibre to rebuild the epub, and make a mobi
         run: |
-          mv "Blockchains are mostly useless.epub" "Blockchains are mostly useless-raw.epub"
-          ebook-convert "Blockchains are mostly useless-raw.epub" "Blockchains are mostly useless.epub"
-          ebook-convert "Blockchains are mostly useless-raw.epub" "Blockchains are mostly useless.mobi"
-          rm "Blockchains are mostly useless-raw.epub"
-        working-directory: build
+          curl -sSfL -o epubcheck.zip "https://github.com/w3c/epubcheck/releases/download/v${EPUBCHECK_VERSION}/epubcheck-${EPUBCHECK_VERSION}.zip"
+          unzip -q epubcheck.zip -d "${RUNNER_TEMP}"
+          rm epubcheck.zip
+          java -jar "${RUNNER_TEMP}/epubcheck-${EPUBCHECK_VERSION}/epubcheck.jar" *.epub
 
-      # Artifact uploads
-      - name: Upload all build artifacts
-        uses: actions/upload-artifact@v2
+      - name: Upload book files
+        uses: actions/upload-artifact@v7
         with:
-          name: Blockchains are mosely useless ${{ github.sha }}
+          name: blockchains-are-mostly-useless-${{ github.sha }}
+          if-no-files-found: error
           path: |
             build/*-digital.pdf
             build/*-print.pdf
             build/*.epub
-            build/*.mobi
             build/*.csv
 
-      # If this run was triggered by a tag, create a release
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
+  release:
+    name: Publish release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-24.04
+
+    permissions:
+      contents: write
+
+    steps:
+
+      - name: Download book files
+        uses: actions/download-artifact@v8
         with:
+          name: blockchains-are-mostly-useless-${{ github.sha }}
+          path: build
+
+      # The email csvs are for Sendy only, they stay out of the public release
+      - name: Release
+        uses: softprops/action-gh-release@v3
+        with:
+          generate_release_notes: true
           fail_on_unmatched_files: true
           files: |
             build/*-digital.pdf
             build/*-print.pdf
             build/*.epub
-            build/*.mobi

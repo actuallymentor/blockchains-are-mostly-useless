@@ -95,6 +95,8 @@ const vivliostyle = ( input, output ) => exec( vivliostyle_bin, [
 	'build', input,
 	'--output', output,
 	'--browser', browser,
+	// Vivliostyle disables the Chrome sandbox unless asked
+	'--sandbox',
 	'--log-level', verbose ? 'info' : 'silent'
 ], { maxBuffer: 1024 * 1024 * 64 } )
 
