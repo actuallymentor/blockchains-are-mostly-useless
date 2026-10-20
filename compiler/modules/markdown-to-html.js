@@ -1,5 +1,5 @@
 import { epubMarkdown, emailMarkdown } from './markdown.js'
-import { footnoteMd, footnoteSingle, addVersioningData } from './html-decorators.js'
+import { footnoteMd, inlineFootnotes, addVersioningData } from './html-decorators.js'
 import { promises as fs } from 'fs'
 
 const { verbose } = process.env
@@ -101,11 +101,7 @@ export const makeEmailHtml = async ( mdstrs, filterInArray, filterOutArray, meta
 
 	let htmlified = paragraphs.map( paragraph => ( {
 		title: paragraph[1],
-		html: footnoteSingle( {
-			data: emailMarkdown
-					.render( paragraph[2] )
-					.replace( new RegExp( meta.asset_prefix || './assets/', 'g'), meta.sendy_book_asset_path )
-		} ).data
+		html: inlineFootnotes( emailMarkdown.render( paragraph[2] ) ).replace( new RegExp( meta.asset_prefix || './assets/', 'g' ), meta.sendy_book_asset_path )
 	} ) )
 
 	if( verbose ) console.log( 'END: Email html done' )

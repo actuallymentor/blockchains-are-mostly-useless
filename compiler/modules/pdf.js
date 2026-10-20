@@ -2,7 +2,7 @@ import { promises as fs } from 'fs'
 import { execFile } from 'child_process'
 import { promisify } from 'util'
 import { pdfMarkdown } from './markdown.js'
-import { footnotePdf, decorateHrefs, addVersioningData } from './html-decorators.js'
+import { inlineFootnotes, decorateHrefs, addVersioningData } from './html-decorators.js'
 
 const exec = promisify( execFile )
 const { verbose, debug } = process.env
@@ -31,7 +31,7 @@ const tocFromHtml = html => {
 // Markdown => html with the pdf-specific decorations: inline footnotes, link domains, version stamps
 const render = ( markdown, { decorate = true } = {} ) => {
 	const html = pdfMarkdown.render( markdown, {} )
-	return addVersioningData( decorate ? decorateHrefs( footnotePdf( html ) ) : html )
+	return addVersioningData( decorate ? decorateHrefs( inlineFootnotes( html ) ) : html )
 }
 
 // Both pdfs share pdf.css, the paperback adds gutters and grayscale-friendly tweaks

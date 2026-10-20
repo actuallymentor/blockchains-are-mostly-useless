@@ -16,7 +16,7 @@ const get_fn_paragraph_w_footnotes_regex = fn_number => new RegExp( `(<p>.*?)("#
 const get_fn_table_w_footnores_regex 	 = fn_number => new RegExp( `(<table>(?:(?!<\\/table>).)*?)("#fn${fn_number}")(.*?<\\/table>)${fn_string}`, 's' )
 const get_fn_list_w_footnotes_regex 	 = fn_number => new RegExp( `(<(?:ul|ol)>(?:(?!<\\/(?:ul|ol)>).)*?)("#fn${fn_number}")(.*?<\\/(?:ul|ol)>)${fn_string}`, 's' )
 const get_fn_section_regex				 = new RegExp( `<hr class="footnotes-sep".*?<\\/section>`, 's' )
-const get_all_hrefs_regex				 = new RegExp( `(<a.*?href="[https]{1,5}:)(.*?)(>.*?)(<\/a>)`, 'ig' )
+const get_all_hrefs_regex				 = new RegExp( `(<a.*?href="[https]{1,5}:)(.*?)(>.*?)(</a>)`, 'ig' )
 
 const add_fn_below_matched_section = fn_counter => {
 	return function ( fullmatch, before_anchor_id, anchor_id, after_anchor_id, div_all_inline_fn, offset, inputstring ) {
@@ -24,80 +24,33 @@ const add_fn_below_matched_section = fn_counter => {
 	}
 }
 
-export const footnoteSingle = html => { 
+/**
+ * Move every footnote from the footnote section at the bottom to just below the paragraph, table or list that references it
+ * @param {String} html - rendered markdown-it-footnote html
+ * @returns {String} html with inline footnotes and without the footnote section
+ */
+export const inlineFootnotes = html => {
 
-	let fn_counter = 1
-	while( fn_counter ){
+	for( let fn_counter = 1; exists_regex( html, get_fn_nr_regex( fn_counter ) ); fn_counter++ ) {
 
-		// Generate regex of the current footnote
-		let reference  = get_fn_nr_regex( fn_counter )
-		let paragraph  = exists_regex( html.data, get_fn_paragraph_w_footnotes_regex( fn_counter ) ) ? get_fn_paragraph_w_footnotes_regex( fn_counter ) : false
-		let table 	   = exists_regex( html.data, get_fn_table_w_footnores_regex( fn_counter ) )     ? get_fn_table_w_footnores_regex( fn_counter ) : false
-		let list 	   = exists_regex( html.data, get_fn_list_w_footnotes_regex( fn_counter ) )      ? get_fn_list_w_footnotes_regex( fn_counter ) : false
+		// A footnote can sit in a paragraph, a table or a list, inline it below whichever holds it
+		const containers = [
+			get_fn_paragraph_w_footnotes_regex( fn_counter ),
+			get_fn_table_w_footnores_regex( fn_counter ),
+			get_fn_list_w_footnotes_regex( fn_counter )
+		].filter( container => exists_regex( html, container ) )
 
-		// Check if fn<current> exists in the text
-		if( exists_regex( html.data, reference ) ) {
+		for( const container of containers ) html = html.replace( container, add_fn_below_matched_section( fn_counter ) )
 
-			if( paragraph )  html.data = html.data.replace( paragraph, add_fn_below_matched_section( fn_counter ) )
-			if( table ) 	 html.data = html.data.replace( table, add_fn_below_matched_section( fn_counter ) )
-			if( list ) 	 	 html.data = html.data.replace( list, add_fn_below_matched_section( fn_counter ) )
-
-
-			// Increment counter
-			fn_counter ++
-
-		} else { 
-			fn_counter = false
-		}
 	}
+
 	// Once all fns are inlined, remove the fn section
-	let fn_section = exists_regex( html.data, get_fn_section_regex ) ? get_fn_section_regex : false
-	if( fn_section ) html.data = html.data.replace( fn_section, '' )
-	return html
-}
-
-export const footnoteMd = htmls => { 
-
-	// Add footnotes to html objects
-	let footnotified = htmls.map( footnoteSingle )
-
-	return footnotified
+	return html.replace( get_fn_section_regex, '' )
 
 }
 
-export const footnotePdf = html => {
-
-	let fn_counter = 1
-	while( fn_counter ){ 
-
-		// Generate regex of the current footnote
-		let reference  = get_fn_nr_regex( fn_counter )
-		let paragraph  = exists_regex( html, get_fn_paragraph_w_footnotes_regex( fn_counter ) ) ? get_fn_paragraph_w_footnotes_regex( fn_counter ) : false
-		let table 	   = exists_regex( html, get_fn_table_w_footnores_regex( fn_counter ) )     ? get_fn_table_w_footnores_regex( fn_counter ) : false
-		let list 	   = exists_regex( html, get_fn_list_w_footnotes_regex( fn_counter ) )      ? get_fn_list_w_footnotes_regex( fn_counter ) : false
-
-	    // Check if fn<current> exists in the text
-		if( exists_regex( html, reference ) ) {
-
-			if( paragraph )  html = html.replace( paragraph, add_fn_below_matched_section( fn_counter ) )
-			if( table ) 	 html = html.replace( table, add_fn_below_matched_section( fn_counter ) )
-			if( list ) 	 	 html = html.replace( list, add_fn_below_matched_section( fn_counter ) )
-
-
-			// Increment counter
-			fn_counter ++
-
-		} else { 
-			fn_counter = false
-		}
-	}
-	// Once all fns are inlined, remove the fn section
-	let fn_section = exists_regex( html, get_fn_section_regex ) ? get_fn_section_regex : false
-	if( fn_section ) html = html.replace( fn_section, '' )
-
-	return html
-
-}
+// Inline footnotes for a list of { data: html } chapters
+export const footnoteMd = chapters => chapters.map( chapter => ( { ...chapter, data: inlineFootnotes( chapter.data ) } ) )
 
 export const decorateHrefs = html => {
 

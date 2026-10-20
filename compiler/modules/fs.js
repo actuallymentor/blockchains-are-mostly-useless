@@ -1,17 +1,20 @@
 import { promises as fs } from 'fs'
 
-// Filter out the markdowns from a path
-const mds = path => ( 
-	// Read the full dir
-	fs.readdir( path )
-	// Filter out the mds
-	.then( files => files.filter( file => file.indexOf( '.md' ) != -1 ? true : false ) )
-	// Remove files that do not begin with a number
-	.then( files => files.filter( file => file.match( /^\d.*/ ) == null ? false : true ) )
-	// Generate full paths for the files
-	.then( filenames => filenames.map( filename => `${path}/${filename}` ) )
-	// Sort files by numbers
-	.then( markdowns => markdowns.sort() )
-)
+/**
+ * List the chapter markdown files of a folder in reading order
+ * Only files starting with a number count, sorted numerically so "10.0" comes after "2.0"
+ * @param {String} path - folder holding the chapters
+ * @returns {Promise<String[]>} full paths
+ */
+const mds = async path => {
+
+	const files = await fs.readdir( path )
+
+	return files
+		.filter( file => file.endsWith( '.md' ) && /^\d/.test( file ) )
+		.sort( ( a, b ) => a.localeCompare( b, 'en', { numeric: true } ) )
+		.map( file => `${ path }/${ file }` )
+
+}
 
 export default mds

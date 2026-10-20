@@ -5,8 +5,10 @@
   "main": "app.js",
   "scripts": {
     "start": "bookversion=$( git describe --tags --abbrev=0 || echo 'v0.0.0' ) lastedit=$( git log -1 --format=%cd ) node app.js",
-    "test": "node --test test/unit/",
-    "links": "node --test test/links.js"
+    "test": "node --test 'test/unit/*.test.js'",
+    "links": "node --test test/links.js",
+    "lint": "eslint .",
+    "verify": "node --test test/build.test.js"
   },
   "repository": {
     "type": "git",
@@ -29,8 +31,10 @@
     "taim": "^1.1.0"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@vivliostyle/cli": "^11.4.0",
-    "eslint": "^7.14.0"
+    "eslint": "^10.13.0",
+    "globals": "^17.13.0"
   },
   "type": "module",
   "engines": {

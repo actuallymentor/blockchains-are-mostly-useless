@@ -2,7 +2,7 @@ import { promises as fs } from 'fs'
 import { EPub } from '@lesjoursfr/html-to-epub'
 import { createObjectCsvWriter as createCsvWriter } from 'csv-writer'
 
-const { verbose, debug } = process.env
+const { verbose } = process.env
 export const makeEpub = async ( content, meta, output ) => {
 
 	// Bundled fonts travel inside the epub, the css references them as fonts/<file>
@@ -118,27 +118,27 @@ export const makeEmailCsv = ( htmls, meta, output, template, aresid ) => {
 
 	// Create csv writer
 	const csvWriter = createCsvWriter( {
-	    path: `${ output }/emails-${template.name}.csv`,
-	    header: [
-	    	{ 'id': 'id', title: 'id' },
-	    	{ id: 'list', title: 'ares_id' },
-	       	{ id: 'from', title: 'from_name' },
-	       	{ id: 'frommail', title: 'from_email' },
-	       	{ id: 'replyto', title: 'reply_to' },
-	       	{ id: 'title', title: 'title' },
-	       	{ id: 'text', title: 'plain_text' },
-	       	{ id: 'html', title: 'html_text' },
-	       	{ id: 'query', title: 'query_string' },
-	       	{ id: 'timing', title: 'time_condition' },
-	       	{ id: 'timezone', title: 'timezone' },
-	       	{ id: 'created', title: 'created' },
-	       	{ id: 'recipients', title: 'recipients' },
-	       	{ id: 'opens', title: 'opens' },
-	       	{ id: 'wysiwyg', title: 'wysiwyg' },
-	       	{ id: 'opens_tracking', title: 'opens_tracking' },
-	       	{ id: 'links_tracking', title: 'links_tracking' },
-	       	{ id: 'enabled', title: 'enabled' }
-	    ]
+		path: `${ output }/emails-${template.name}.csv`,
+		header: [
+			{ 'id': 'id', title: 'id' },
+			{ id: 'list', title: 'ares_id' },
+			{ id: 'from', title: 'from_name' },
+			{ id: 'frommail', title: 'from_email' },
+			{ id: 'replyto', title: 'reply_to' },
+			{ id: 'title', title: 'title' },
+			{ id: 'text', title: 'plain_text' },
+			{ id: 'html', title: 'html_text' },
+			{ id: 'query', title: 'query_string' },
+			{ id: 'timing', title: 'time_condition' },
+			{ id: 'timezone', title: 'timezone' },
+			{ id: 'created', title: 'created' },
+			{ id: 'recipients', title: 'recipients' },
+			{ id: 'opens', title: 'opens' },
+			{ id: 'wysiwyg', title: 'wysiwyg' },
+			{ id: 'opens_tracking', title: 'opens_tracking' },
+			{ id: 'links_tracking', title: 'links_tracking' },
+			{ id: 'enabled', title: 'enabled' }
+		]
 	} )
 
 	// Defaut values
