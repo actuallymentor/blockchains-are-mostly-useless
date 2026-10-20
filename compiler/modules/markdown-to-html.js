@@ -1,38 +1,41 @@
 import { epubMarkdown, emailMarkdown } from './markdown.js'
-import { footnoteMd, footnoteSingle } from './html-decorators.js'
+import { footnoteMd, footnoteSingle, addVersioningData } from './html-decorators.js'
 import { promises as fs } from 'fs'
 
 const { verbose } = process.env
 
-// Convert MD strings to html and return them in a format friendly to the eoub module { data: <html> }
+// Convert markdown chapters to the chapter objects html-to-epub expects: { title, data, ... }
 export const makeEpubHtml = async ( mdstrs, sourcepath, meta ) => {
 
 	if( verbose ) console.log( 'START: Making epub html' )
 
-	let assetPath = await fs.realpath( meta.asset_path || `${sourcepath}/assets` )
-	let htmlarray = mdstrs.map( mdstr => {
-		// Generate chapter title from the first h1
-		let title = mdstr.match( /(?<=# ).*/ )
+	const asset_path = await fs.realpath( meta.asset_path || `${ sourcepath }/assets` )
 
-		// Make asset regex based on the meta.asset_prefix, or use ./assets/ as default
-		const asset_replace_regex = new RegExp( meta.asset_prefix || './assets/', 'g' )
+	// Readers ship their own navigation, so the file with the [[TOC]] placeholder is dropped
+	// and everything before it becomes front matter shown ahead of the reader's toc
+	const toc_index = mdstrs.findIndex( mdstr => mdstr.includes( '[[TOC]]' ) )
+
+	const chapters = mdstrs.map( ( mdstr, index ) => {
+
+		if( index == toc_index ) return
+
+		// Chapter title comes from the first markdown h1
+		const [ title ] = mdstr.match( /(?<=^# ).*/m ) || []
+		const front = index < toc_index
 
 		return {
-			// If a title exists apply it
-			title: title ? title[0] : false,
-			// If there is no title don't show in toc
-			excludeFromToc: title ? false : true,
-			// Exclude the first h1 from the chapter content because epub shows the title
-			// Disabled the .replace( /(?<=^# ).*/, '' ) this since specifying appendChapterTitles: false
-			// Also disabled .replace( 'href="#fn', 'epub:type="noteref" href="#' ) because iBooks is a bitch
-			data: epubMarkdown.render( mdstr ).replace( asset_replace_regex, `file://${ assetPath }` )
+			title: title || meta.title,
+			excludeFromToc: !title,
+			beforeToc: front,
+			// html-to-epub embeds local images when they are file:// urls
+			data: addVersioningData( epubMarkdown.render( mdstr ) ).replaceAll( meta.asset_prefix || './assets', `file://${ asset_path }` )
 		}
-	} )
+
+	} ).filter( Boolean )
 
 	if( verbose ) console.log( 'END: Epub html done' )
 
-
-	return footnoteMd( htmlarray )
+	return footnoteMd( chapters )
 }
 
 export const makeEmailHtml = async ( mdstrs, filterInArray, filterOutArray, meta ) => {

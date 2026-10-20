@@ -19,6 +19,7 @@ const meta = {
 	title: 'Blockchains are mostly useless',
 	author: 'Mentor Palokaj',
 	publisher: 'Mentor Palokaj',
+	description: 'Why blockchains are unsuited to most tasks, and in which cases they can be useful',
 	url: "https://github.com/actuallymentor/blockchains-are-mostly-useless/",
 	email: {
 		from: 'mentor@palokaj.co',

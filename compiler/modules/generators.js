@@ -1,24 +1,47 @@
 import { promises as fs } from 'fs'
-import epub from 'epub-gen'
+import { EPub } from '@lesjoursfr/html-to-epub'
 import { createObjectCsvWriter as createCsvWriter } from 'csv-writer'
 
 const { verbose, debug } = process.env
-export const makeEpub = async ( content, meta, output ) => new epub( {
-	...meta,
-	version: 3,
-	content: content,
-	appendChapterTitles: false,
-	output: `${output}/${meta.title}.epub`,
-	verbose: false
-} ).promise.then( f => console.log( 'Epub generation success' ), e => { throw e } )
+export const makeEpub = async ( content, meta, output ) => {
 
+	// Bundled fonts travel inside the epub, the css references them as fonts/<file>
+	const fonts = ( await fs.readdir( meta.font_path ) )
+		.filter( file => file.endsWith( '.ttf' ) )
+		.map( file => `${ meta.font_path }/${ file }` )
+
+	const book = new EPub( {
+		title: meta.title,
+		author: meta.author,
+		publisher: meta.publisher,
+		description: meta.description,
+		cover: meta.cover,
+		lang: 'en',
+		css: meta.css,
+		fonts,
+		content,
+		appendChapterTitles: false,
+		tocTitle: 'Table of Contents',
+		customOpfTemplatePath: `${ import.meta.dirname }/../templates/content.opf.ejs`,
+		verbose: false
+	}, `${ output }/${ meta.title }.epub` )
+
+	await book.render()
+	if( verbose ) console.log( 'Epub generation success' )
+
+}
+
+
+// Emails can't reach the bundled font files, mail clients that support web fonts get them from Google
+const email_fonts = `@import url('https://fonts.googleapis.com/css?family=PT+Serif:400,400i,700,700i&display=swap');
+@import url('https://fonts.googleapis.com/css?family=PT+Sans:400,400i,700,700i&display=swap');`
 
 export const courseTemplate = ( entry, meta ) => `
 	<!DOCTYPE html>
 	<html>
 	<head>
 		<title>${ entry.title }</title>
-		<style>${ meta.css }</style>
+		<style>${ email_fonts }${ meta.css }</style>
 	</head>
 	<body style="font-family:helvetica neue, Arial, sanf-serif; font-size: 13px;">
 		<p>Hello [Name,fallback=there],</p>
@@ -57,7 +80,7 @@ export const freeTemplate = ( entry, meta, i ) => `
 	<html>
 	<head>
 		<title>${ entry.title }</title>
-		<style>${ meta.css }</style>
+		<style>${ email_fonts }${ meta.css }</style>
 	</head>
 	<body style="font-family:helvetica neue, Arial, sanf-serif; font-size: 13px;">
 		<p>Hello [Name,fallback=there],</p>
