@@ -1,2 +1,12 @@
+# Build output
 build/
-.*
+
+# OS cruft
+.DS_Store
+
+# Private notes (launch plans, agent notes)
+.notes.md
+.notes/
+
+# Secrets
+.env*

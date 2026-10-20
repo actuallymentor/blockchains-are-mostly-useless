@@ -1,6 +1,6 @@
-import publish from './modules/publisher'
+import publish from './modules/publisher.js'
 import { promises as fs, existsSync as exists } from 'fs'
-import sass from 'sass'
+import * as sass from 'sass'
 import { resolve } from 'path'
 
 const { verbose, dirty } = process.env
@@ -20,22 +20,22 @@ const getmeta = async path => (
 		csspath: path.css,
 		printcsspath: path.printcsspath,
 		root: path.source,
-		asset_path: `${__dirname}/../assets`,
+		asset_path: `${import.meta.dirname}/../assets`,
 		asset_prefix: '../assets', // Used in search replace of the markdown
 		sendy_book_asset_path: 'https://mail.palokaj.co/uploads/blockchains-are-mostly-useless/assets/',
-		// root: await fs.realpath( __dirname ),
-		cover: `${__dirname}/../assets/cover.png`,
+		// root: await fs.realpath( import.meta.dirname ),
+		cover: `${import.meta.dirname}/../assets/cover.png`,
 		verbose: false
 	}
 )
 
 const path = {
-	sass: resolve( `${__dirname}/modules/styles/style.scss` ),
-	css: resolve( `${__dirname}/modules/style.css` ),
-	printsass: resolve( `${__dirname}/modules/styles/print.scss` ),
-	printcsspath: resolve( `${__dirname}/modules/print.css` ),
-	source: resolve( `${ __dirname }/../book` ),
-	build: resolve( `${ __dirname }/../build` )
+	sass: resolve( `${import.meta.dirname}/modules/styles/style.scss` ),
+	css: resolve( `${import.meta.dirname}/modules/style.css` ),
+	printsass: resolve( `${import.meta.dirname}/modules/styles/print.scss` ),
+	printcsspath: resolve( `${import.meta.dirname}/modules/print.css` ),
+	source: resolve( `${ import.meta.dirname }/../book` ),
+	build: resolve( `${ import.meta.dirname }/../build` )
 }
 
 const config = {
@@ -48,13 +48,9 @@ const config = {
 }
 
 const sassify = async ( infile, outfile ) => {
-	console.log( 'Sassifying: ', infile, ' to ', outfile )
-	try {
-		const { css } = await sass.compileAsync( infile )
-		await fs.writeFile( outfile, css )
-	} catch( e ) {
-		console.log( 'SASSification error: ', e )
-	}
+	if( verbose ) console.log( 'Sassifying: ', infile, ' to ', outfile )
+	const { css } = await sass.compileAsync( infile )
+	await fs.writeFile( outfile, css )
 }
 
 // Build the css from sass

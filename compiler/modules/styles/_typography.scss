@@ -1,10 +1,12 @@
+@use "variables";
+
 @import url('https://fonts.googleapis.com/css?family=PT+Serif:400,400i,700,700i&display=swap&subset=cyrillic,cyrillic-ext,latin-ext');
 @import url('https://fonts.googleapis.com/css?family=PT+Sans:400,400i,700,700i&display=swap&subset=cyrillic,cyrillic-ext,latin-ext');
 $serif: 'PT Serif';
 $sans-serif: 'PT Sans';
 
 html, body {
-	font-size: $font-size;
+	font-size: variables.$font-size;
 	font-family: $serif, serif;
 	font-variant: no-common-ligatures;
 	font-feature-settings: "liga" 0;

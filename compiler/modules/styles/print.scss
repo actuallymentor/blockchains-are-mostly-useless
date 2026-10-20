@@ -1,12 +1,12 @@
-@import "_variables.scss";
+@use "_variables.scss";
 
 // Print order: pretoc, toc, content
 // The frst page (chap not toc) is the left 
 @page :left {
-	margin-right: $v-margin*$spine-offset-factor;
+	margin-right: variables.$v-margin*variables.$spine-offset-factor;
 }
 @page :right {
-	margin-left: $h-margin*$spine-offset-factor;
+	margin-left: variables.$h-margin*variables.$spine-offset-factor;
 }
 
 .noprint {

@@ -1,13 +1,12 @@
 {
   "name": "book-compiler",
-  "version": "1.0.0",
-  "description": "Compoiling multimarkdown to epub and pdf",
+  "version": "2.0.0",
+  "description": "Compiles markdown to epub, pdf and email csv",
   "main": "app.js",
   "scripts": {
-    "fix:puppeteer": "test -f /usr/local/bin/chromium || grep -rl \"/usr/bin/chromium-browser\" . | xargs sed -i -e \"s%/usr/bin/chromium-browser%$( which chromium )%\"",
-    "test": "mocha --max-http-header-size=80000 -r esm",
-    "links": "verbose=true mocha --max-http-header-size=80000 -r esm",
-    "start": "bookversion=$( git describe --tags --abbrev=0 || echo 'v0.0.0' ) lastedit=$( git show --summary| grep Date | grep -o '[A-Z][a-z][a-z] .*' ) node -r esm app.js"
+    "start": "bookversion=$( git describe --tags --abbrev=0 || echo 'v0.0.0' ) lastedit=$( git log -1 --format=%cd ) node app.js",
+    "test": "node --test test/unit/",
+    "links": "node --test test/links.js"
   },
   "repository": {
     "type": "git",
@@ -23,26 +22,21 @@
     "csv-writer": "^1.6.0",
     "epub-gen": "0.1.0",
     "html5-to-pdf": "^4.0.1",
-    "inline-source": "^7.2.0",
-    "markdown-it": "^12.0.2",
-    "markdown-it-anchor": "^6.0.0",
-    "markdown-it-footnote": "^3.0.2",
-    "markdown-it-hierarchy": "^1.1.0",
-    "markdown-it-implicit-figures": "^0.10.0",
-    "markdown-it-table-of-contents": "^0.4.4",
-    "markdown-pdf": "^10.0.0",
-    "sass": "^1.53.0",
+    "inline-source": "^8.0.3",
+    "markdown-it": "^15.0.3",
+    "markdown-it-anchor": "^10.0.0",
+    "markdown-it-footnote": "^4.0.0",
+    "markdown-it-implicit-figures": "^0.12.0",
+    "markdown-it-table-of-contents": "^1.2.0",
+    "sass": "^1.105.2",
     "taim": "^1.1.0"
   },
   "devDependencies": {
-    "chai": "^4.2.0",
-    "chai-as-promised": "^7.1.1",
-    "chai-subset": "^1.6.0",
     "eslint": "^7.14.0",
-    "esm": "^3.2.25",
-    "mocha": "^8.2.1",
-    "pdf-parse": "^1.1.1",
-    "request": "^2.88.0",
-    "request-promise-native": "^1.0.8"
+    "pdf-parse": "^1.1.1"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=24"
   }
 }

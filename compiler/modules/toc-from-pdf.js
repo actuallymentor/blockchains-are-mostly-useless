@@ -1,4 +1,4 @@
-import pdfParser from 'pdf-parse'
+import pdfParser from 'pdf-parse/lib/pdf-parse.js'
 import { promises as fs } from 'fs'
 
 // Match titles by regex and return the match
@@ -73,7 +73,7 @@ const buildToc = async ( output, meta, mdstrs, prepends = [] ) => {
 						const { pageNumber } = pdfjson.find( page => page.text && page.text.match( new RegExp( `${ chapterPrefix }${ regEscape( title ) }` ) ) ) || {}
 
 						// If no page number was found for this heading do not continue
-						if( !pageNumber && !process.env.debug ) throw `Found no page number for: ${ title }`
+						if( !pageNumber ) throw `Found no page number for: ${ title }`
 
 						// Generate link to chapter
 						const liLink = `<li>

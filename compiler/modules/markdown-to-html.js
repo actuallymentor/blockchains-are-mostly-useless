@@ -1,5 +1,5 @@
-import { pdfMarkdown, epubMarkdown, emailMarkdown } from './markdown'
-import { footnoteMd, footnotePdf, footnoteSingle, decorateHrefs, addVersioningData } from './html-decorators'
+import { pdfMarkdown, epubMarkdown, emailMarkdown } from './markdown.js'
+import { footnoteMd, footnotePdf, footnoteSingle, decorateHrefs, addVersioningData } from './html-decorators.js'
 import { promises as fs } from 'fs'
 import { inlineSource } from 'inline-source'
 

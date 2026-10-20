@@ -24,21 +24,15 @@ export const makeEpub = async ( content, meta, output ) => new epub( {
 
 const buildPdf = async pdf => {
 
-	try {
+	if( verbose ) console.log( 'START: open pdf instance' )
+	await pdf.start()
 
-		if( verbose ) console.log( 'START: open pdf instance' )
-		await pdf.start()
-		
-		if( verbose ) console.log( 'START: Build pdf ' )
-		await pdf.build()
-		
-		if( verbose ) console.log( 'END: build pdf instance' )
-		await pdf.close()
+	if( verbose ) console.log( 'START: Build pdf ' )
+	await pdf.build()
 
-	} catch( e ) {
-		console.error( 'buildPdf error: ', e )
-	}
-	
+	if( verbose ) console.log( 'END: build pdf instance' )
+	await pdf.close()
+
 }
 
 export const makeToc = ( tocHtml, meta, output ) => {
@@ -164,7 +158,7 @@ export const mergePdfs = ( output, meta ) => new Promise( ( resolve, reject ) =>
 	const run = exec( `${command} ${ args }` )
 	run.on( 'exit', code => {
 		if( code == 0 ) return resolve() 
-		reject( `Ghostscript failed to perge PDFs, exit code: `, code )
+		reject( new Error( `Ghostscript failed to merge PDFs, exit code: ${ code }` ) )
 	} )
 
 } )

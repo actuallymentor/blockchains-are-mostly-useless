@@ -8,7 +8,7 @@ const mdEmail = new mdit( { html: true, xhtmlOut: true } )
 import footnotes  		from 'markdown-it-footnote'
 import toc 		  		from 'markdown-it-table-of-contents'
 import anchors 	  		from 'markdown-it-anchor' // Required for linkable toc
-import hierarchy  		from 'markdown-it-hierarchy' // Add hierarchy numbes to headings. e,g, 1.1 Chapter 1.2 Subsection
+import hierarchy  		from './hierarchy.js' // Add hierarchy numbers to headings. e,g, 1.1 Chapter 1.2 Subsection
 import implicitFigures 	from 'markdown-it-implicit-figures'
 
 // Apply relevant plugins to the markdown package

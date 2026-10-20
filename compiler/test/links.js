@@ -1,4 +1,4 @@
-import expect from './modules/expect'
+import expect from './modules/expect.js'
 import { promises as fs } from 'fs'
 import { normalize } from 'path'
 import mds from '../modules/fs.js'
@@ -34,7 +34,7 @@ describe( 'Links in the book', function( ) {
 	it( 'are all valid', async function() {
 
 		// Get the paths to markdowns
-		const paths = await mds( `${__dirname}/../../` )
+		const paths = await mds( `${import.meta.dirname}/../../` )
 
 		// Get markdown and fix footnoe structure to match npm module syntax
 		const markdowns = await Promise.all( paths.map( async path => ( {
@@ -55,7 +55,7 @@ describe( 'Links in the book', function( ) {
 		const broken = await Promise.all( linksWithFile.map( link => isBroken( link ) ) )
 		const filtered = broken.filter( notfalse => notfalse )
 
-		if( process.env.verbose && filtered.length > 0 ) await fs.writeFile( `${__dirname}/../broken-links.json`, JSON.stringify( filtered, null, 2 ) )
+		if( process.env.verbose && filtered.length > 0 ) await fs.writeFile( `${import.meta.dirname}/../broken-links.json`, JSON.stringify( filtered, null, 2 ) )
 		if( process.env.verbose && filtered.length > 0 ) console.log( filtered.length, ' links are broken: ', filtered )
 
 		return filtered.should.have.length( 0 )
