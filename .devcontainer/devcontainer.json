@@ -1,6 +1,8 @@
 {
 	"name": "Book",
 	"build": { "dockerfile": "Dockerfile" },
+	// Chrome's sandbox needs user namespaces, which Docker's default seccomp profile blocks
+	"runArgs": [ "--security-opt", "seccomp=unconfined" ],
 	"postCreateCommand": "cd compiler && npm ci",
 	"forwardPorts": [ 13000 ],
 	"customizations": {

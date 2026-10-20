@@ -9,7 +9,7 @@ const { verbose, debug } = process.env
 
 // Vivliostyle drives this exact browser build, so layout never drifts with the system Chrome
 // bump deliberately, then eyeball the pagination of the output
-const browser = 'chrome@155.0.8059.84'
+export const browser = 'chrome@155.0.8059.84'
 
 // Book chapters are split around the markdown file that holds the [[TOC]] placeholder
 const toc_marker = '[[TOC]]'
@@ -55,7 +55,7 @@ ${ body }
 
 /**
  * Build the print and digital html documents
- * @param {Object} meta - book meta, see app.js
+ * @param {Object} meta - book meta, see book.config.js
  * @param {String[]} markdowns - chapter markdown strings, sorted
  * @returns {{ print: String, digital: String }} full html documents
  */
@@ -89,7 +89,7 @@ export const makePdfHtmls = ( meta, markdowns ) => {
 // Pdf
 // ///////////////////////////////
 
-const vivliostyle_bin = `${ import.meta.dirname }/../node_modules/.bin/vivliostyle`
+export const vivliostyle_bin = `${ import.meta.dirname }/../node_modules/.bin/vivliostyle`
 
 const vivliostyle = ( input, output ) => exec( vivliostyle_bin, [
 	'build', input,
@@ -136,23 +136,34 @@ const reportPrintSpecs = async pdf => {
 }
 
 /**
+ * Write the pdf html documents and the images they use into the build folder
+ * @param {{ print: String, digital: String }} htmls - from makePdfHtmls
+ * @param {Object} meta - book meta, see book.config.js
+ * @param {String} output - build folder
+ */
+export const writePdfHtmls = async ( htmls, meta, output ) => {
+
+	// Vivliostyle only serves files below the html's folder, so referenced images move into the build
+	await copyAssets( htmls.print, meta, output )
+
+	await Promise.all( [
+		fs.writeFile( `${ output }/${ meta.title }-print.html`, htmls.print ),
+		fs.writeFile( `${ output }/${ meta.title }-digital.html`, htmls.digital )
+	] )
+
+}
+
+/**
  * Render the digital and print pdfs
  * @param {{ print: String, digital: String }} htmls - from makePdfHtmls
- * @param {Object} meta - book meta, see app.js
+ * @param {Object} meta - book meta, see book.config.js
  * @param {String} output - build folder
  */
 export const makePdfs = async ( htmls, meta, output ) => {
 
 	const file = suffix => `${ output }/${ meta.title }${ suffix }`
 
-	// Vivliostyle only serves files below the html's folder, so referenced images move into the build
-	await copyAssets( htmls.print, meta, output )
-
-	// Vivliostyle reads the html from disk so relative asset and css paths resolve
-	await Promise.all( [
-		fs.writeFile( file( '-print.html' ), htmls.print ),
-		fs.writeFile( file( '-digital.html' ), htmls.digital )
-	] )
+	await writePdfHtmls( htmls, meta, output )
 
 	// Sequential on purpose: parallel runs race each other on the first browser download
 	await vivliostyle( file( '-print.html' ), file( '-print-color.pdf' ) )

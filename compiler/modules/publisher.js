@@ -14,16 +14,25 @@ const wants = {
 	csv: !onlypdf && !onlyepub
 }
 
-const publisher = async ( input, output, meta, config ) => {
+/**
+ * Read the chapter markdowns in reading order
+ * @param {String} input - book folder
+ * @returns {Promise<String[]>} markdown per chapter
+ */
+export const readBook = async input => {
 
-	const { freeChapters } = config
-
-	// Read the chapters in order
 	const paths = await mds( input )
 	const markdowns = await Promise.all( paths.map( path => fs.readFile( path, 'utf8' ) ) )
 
 	// Footnotes are written as [^text] in the book, markdown-it-footnote wants inline ^[text]
-	const strings = markdowns.map( md => md.replace( /\[\^/g, '^[' ) )
+	return markdowns.map( md => md.replace( /\[\^/g, '^[' ) )
+
+}
+
+const publisher = async ( input, output, meta, config ) => {
+
+	const { freeChapters } = config
+	const strings = await readBook( input )
 
 	await Promise.all( [
 
