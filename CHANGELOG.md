@@ -25,6 +25,7 @@ Book editions are git tags (`v*`, see releases). This log tracks the compiler an
 - dead CI actions (`upload-artifact@v2`) (733468a)
 - epub: 0 EPUBCheck errors (was 25), no literal "[[TOC]]" chapter, version stamp filled (4a438eb)
 - link test scanned no files (8cb349d)
+- epub reader toc hid the Preface entry (leftover css rule)
 - chapters sort numerically, `10.0` after `2.0` (8cb349d)
 - Sass declaration order flipped figure spacing (8bbb4e7)
 - dead recommended-reading links now point at archived copies (9296e35)

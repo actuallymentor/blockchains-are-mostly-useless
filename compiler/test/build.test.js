@@ -1,6 +1,6 @@
 /**
  * Checks the finished build in ../build, run after `npm start`
- * Needs poppler-utils (pdftotext, pdfinfo, pdffonts, pdfimages)
+ * Needs poppler-utils (pdftotext, pdfinfo, pdffonts, pdfimages) and unzip
  */
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
@@ -75,6 +75,21 @@ test( 'print pdf is grayscale with print resolution images', () => {
 		assert.equal( color, 'gray', `colour image on page ${ page }` )
 		assert.ok( Number( x_ppi ) >= 200, `low resolution (${ x_ppi } ppi) image on page ${ page }` )
 	}
+
+} )
+
+test( 'epub lists every chapter in its toc and hides none of them', () => {
+
+	const epub = file( '.epub' )
+	const toc = run( 'unzip', '-p', epub, 'OEBPS/toc.xhtml' )
+	const css = run( 'unzip', '-p', epub, 'OEBPS/style.css' )
+
+	// Same chapters as the pdf toc, in order
+	const chapters = tocEntries( file( '-digital.pdf' ) ).map( ( { heading } ) => heading )
+	const listed = Array.from( toc.matchAll( /class="table-of-content">\s*<a [^>]*>([^<]+)</g ), ( [ , title ] ) => squash( title ) )
+
+	assert.deepEqual( listed, chapters )
+	assert.doesNotMatch( css, /#toc[^{]*\{[^}]*display:\s*none/ )
 
 } )
 
