@@ -1,0 +1,62 @@
+@use "variables";
+
+// ///////////////////////////////
+// Paged media (Vivliostyle), shared by the print and digital pdf
+// ///////////////////////////////
+@page {
+  margin: variables.$v-margin variables.$h-margin;
+  size: variables.$page-width variables.$page-height;
+
+  @bottom-right {
+    content: counter( page );
+    font-size: 9px;
+    vertical-align: middle;
+  }
+}
+
+// Front matter: one block per page, vertically centered
+.front {
+
+  .center, #pdfcover {
+    break-before: page;
+    height: variables.$page-height - 2 * variables.$v-margin;
+  }
+
+  // The first block must not leave a blank first page
+  > :first-child { break-before: auto; }
+
+  // Spacer used to push the cover to its own page in the old pipeline
+  .center:empty { display: none; }
+
+}
+
+// ///////////////////////////////
+// Table of contents, page numbers resolved by Vivliostyle
+// ///////////////////////////////
+.toc {
+  break-before: page;
+  text-align: center;
+
+  h1 { margin-top: 4rem; }
+
+  ul {
+    list-style: none;
+    padding: 1rem;
+    font-size: .8rem;
+  }
+
+  li {
+    margin: 0;
+    padding: 2px 0;
+  }
+
+  a, a[href]:after { color: black; }
+
+  // Overrides the global "no link suffix" rule from _typography
+  a[href]::after {
+    content: " - " target-counter( attr( href url ), page ) !important;
+  }
+}
+
+// Chapters always open on a fresh page
+.content h1 { break-before: page; }

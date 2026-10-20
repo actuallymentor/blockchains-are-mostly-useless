@@ -1,90 +1,77 @@
 import publish from './modules/publisher.js'
-import { promises as fs, existsSync as exists } from 'fs'
+import { promises as fs } from 'fs'
 import * as sass from 'sass'
 import { resolve } from 'path'
 
 const { verbose, dirty } = process.env
-
-// Book Meta
-const getmeta = async path => ( 
-	{ 
-		title: 'Blockchains are mostly useless',
-		author: 'Mentor Palokaj',
-		publisher: 'Mentor Palokaj',
-		url: "https://github.com/actuallymentor/blockchains-are-mostly-useless/",
-		email: {
-			from: 'mentor@palokaj.co',
-			replyto: 'mentor@palokaj.co'
-		},
-		css: await fs.readFile( path.css, 'utf8' ),
-		csspath: path.css,
-		printcsspath: path.printcsspath,
-		root: path.source,
-		asset_path: `${import.meta.dirname}/../assets`,
-		asset_prefix: '../assets', // Used in search replace of the markdown
-		sendy_book_asset_path: 'https://mail.palokaj.co/uploads/blockchains-are-mostly-useless/assets/',
-		// root: await fs.realpath( import.meta.dirname ),
-		cover: `${import.meta.dirname}/../assets/cover.png`,
-		verbose: false
-	}
-)
+const here = import.meta.dirname
 
 const path = {
-	sass: resolve( `${import.meta.dirname}/modules/styles/style.scss` ),
-	css: resolve( `${import.meta.dirname}/modules/style.css` ),
-	printsass: resolve( `${import.meta.dirname}/modules/styles/print.scss` ),
-	printcsspath: resolve( `${import.meta.dirname}/modules/print.css` ),
-	source: resolve( `${ import.meta.dirname }/../book` ),
-	build: resolve( `${ import.meta.dirname }/../build` )
+	styles: resolve( `${ here }/modules/styles` ),
+	fonts: resolve( `${ here }/fonts` ),
+	source: resolve( `${ here }/../book` ),
+	assets: resolve( `${ here }/../assets` ),
+	build: resolve( `${ here }/../build` )
+}
+
+// Book Meta
+const meta = {
+	title: 'Blockchains are mostly useless',
+	author: 'Mentor Palokaj',
+	publisher: 'Mentor Palokaj',
+	url: "https://github.com/actuallymentor/blockchains-are-mostly-useless/",
+	email: {
+		from: 'mentor@palokaj.co',
+		replyto: 'mentor@palokaj.co'
+	},
+	root: path.source,
+	font_path: path.fonts,
+	asset_path: path.assets,
+	asset_prefix: '../assets', // Used in search replace of the markdown
+	sendy_book_asset_path: 'https://mail.palokaj.co/uploads/blockchains-are-mostly-useless/assets/',
+	cover: `${ path.assets }/cover.png`
 }
 
 const config = {
-	tocHeadings: [
-		// { match: 'string', heading: 'string' }
-	],
 	freeChapters: [],
 	premiumDripAresId: 9,
 	freeDripAresId: 5 // Not using this for this book
 }
 
-const sassify = async ( infile, outfile ) => {
-	if( verbose ) console.log( 'Sassifying: ', infile, ' to ', outfile )
-	const { css } = await sass.compileAsync( infile )
-	await fs.writeFile( outfile, css )
+// Compile every stylesheet entry point into the build folder, next to a copy of the fonts
+const compileStyles = async () => {
+
+	const entries = [ 'style', 'pdf', 'print' ]
+
+	const [ style ] = await Promise.all( entries.map( async name => {
+		if( verbose ) console.log( `Compiling ${ name }.scss` )
+		const { css } = await sass.compileAsync( `${ path.styles }/${ name }.scss` )
+		await fs.writeFile( `${ path.build }/${ name }.css`, css )
+		return css
+	} ) )
+
+	await fs.cp( path.fonts, `${ path.build }/fonts`, { recursive: true } )
+
+	// The epub and emails embed the shared stylesheet as a string
+	return style
+
 }
 
-// Build the css from sass
-export default Promise.all( [
-	sassify( path.sass, path.css ),
-	sassify( path.printsass, path.printcsspath )
-] )
-// Make the build folder if it does not yet exist
-.then( async f => {
+const build = async () => {
 
-	if( verbose ) console.log( 'Sassification complete' )
-	if( dirty ) return
+	// Start from an empty build folder unless asked not to
+	if( !dirty ) await fs.rm( path.build, { recursive: true, force: true } )
+	await fs.mkdir( path.build, { recursive: true } )
 
-	// Remove old files
-	if( exists( path.build ) ) {
-		const files = await fs.readdir( path.build )
-		if( files ) await Promise.all( files.map( file => fs.unlink( `${ path.build }/${ file }` ) ) )
+	const css = await compileStyles()
 
-		return verbose && console.log( 'Directory cleaned' ) // No need to continue
-	}
+	await publish( path.source, path.build, { ...meta, css }, config )
 
-	return fs.mkdir( path.build, { recursive: true } )
+	if( verbose ) console.log( 'Generation complete' )
 
-} )
-// Get the css and generate a meta data object
-.then( f => getmeta( path ) )
-// Read and transform the book
-.then( meta => {
-	if( verbose ) console.log( 'Start book transforms with' )
-	return publish( path.source, path.build, meta, config )
-} )
-// Feedback
-.then( f => verbose && console.log( 'Generation complete' ) )
-.catch( err => {
-	console.log( err )
+}
+
+build().catch( error => {
+	console.error( error )
 	process.exit( 1 )
 } )

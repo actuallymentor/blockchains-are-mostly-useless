@@ -1,16 +1,6 @@
 @use "variables";
 
 // ///////////////////////////////
-// Print styling
-// ///////////////////////////////
-// Print order: pretoc, toc, content
-@page {
-  margin: variables.$v-margin variables.$h-margin;
-  size: variables.$page-width variables.$page-height;
-}
-
-
-// ///////////////////////////////
 // General PDF declarations
 // ///////////////////////////////
 // Only show on pdf

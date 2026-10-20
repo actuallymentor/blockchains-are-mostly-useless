@@ -1,6 +1,8 @@
 @use "sass:meta";
 @use "_variables.scss";
 
+@include meta.load-css( "_fonts.scss" );
+
 // Cross platform centering
 .center {
   height: 100%;

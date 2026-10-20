@@ -1,7 +1,6 @@
-import { pdfMarkdown, epubMarkdown, emailMarkdown } from './markdown.js'
-import { footnoteMd, footnotePdf, footnoteSingle, decorateHrefs, addVersioningData } from './html-decorators.js'
+import { epubMarkdown, emailMarkdown } from './markdown.js'
+import { footnoteMd, footnoteSingle } from './html-decorators.js'
 import { promises as fs } from 'fs'
-import { inlineSource } from 'inline-source'
 
 const { verbose } = process.env
 
@@ -34,46 +33,6 @@ export const makeEpubHtml = async ( mdstrs, sourcepath, meta ) => {
 
 
 	return footnoteMd( htmlarray )
-}
-
-export const makePdfHtmls = async ( meta, mdstrs, input, output ) => { 
-
-	if( verbose ) console.log( 'START: Making pdf html' )
-
-	// Plit sections for parsing below
-	let pretoc = [ ...mdstrs.slice( 0, 1 ) ].join( '\n\n' )
-	let toc   = [ ...mdstrs.slice( 1, 2 ) ].join( '\n\n' ) // Unused
-	let book  = [ ...mdstrs.slice( 2 ) ].join( '\n\n' )
-	let full = mdstrs.join( '\n\n' )
-
-	pretoc = addVersioningData( pdfMarkdown.render( pretoc ) )
-	book = addVersioningData( decorateHrefs( footnotePdf( pdfMarkdown.render( book ) ) ) )
-	full = addVersioningData( decorateHrefs( footnotePdf( pdfMarkdown.render( full ) ) ) )
-
-	// Join together all strings
-	const preTocHtml = `<span class='print pdf'><section class='pretoc'>${ pretoc }</section></span>`
-	const contentHtml = `<span class='print pdf'><section class='content'>${ book }</section></span>`
-	const fullHtml = `<span class='pdf'><section class='content'>${ full }</section></span>`
-
-	// I'm resetting the image path to the source folder, the templatePath option in the pdf generator adds the right directory prefix
-	// let pathified = html.replace( new RegExp( /\.\/assets/, 'g'), `file://${input}/assets` )
-
-	// Inlining the images because of puppeteer
-	const [ inlinedPreToc, inlinedContent, inlinedFullHtml ] = await Promise.all( [ preTocHtml, contentHtml, fullHtml ].map( html => {
-		return inlineSource( html, {
-			// inline all
-			attribute: false,
-			svgAsImage: true,
-			rootpath: input
-		} )
-	} ) )
-	
-	if( verbose ) console.log( 'START: Writing pdf html to file' )
-	// Write to html file
-	await fs.writeFile( `${output}/${meta.title}.html`, inlinedFullHtml )
-
-	if( verbose ) console.log( 'END: Pdf html done' )
-	return [ inlinedPreToc, inlinedContent, inlinedFullHtml ]
 }
 
 export const makeEmailHtml = async ( mdstrs, filterInArray, filterOutArray, meta ) => {
