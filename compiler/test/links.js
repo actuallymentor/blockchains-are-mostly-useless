@@ -40,11 +40,18 @@ const status = async url => {
 
 // Run promises a few at a time so we don't hammer anyone
 const throttled = async ( items, worker, lanes = 8 ) => {
+
 	const results = []
+
+	// Every lane pulls the next item from one shared iterator until it runs dry
 	const queue = items.entries()
-	const lane = async () => { for( const [ index, item ] of queue ) results[ index ] = await worker( item ) }
+	const lane = async () => {
+		for( const [ index, item ] of queue ) results[ index ] = await worker( item )
+	}
+
 	await Promise.all( Array.from( { length: lanes }, lane ) )
 	return results
+
 }
 
 test( 'links in the book are alive', { timeout: 10 * 60_000 }, async () => {

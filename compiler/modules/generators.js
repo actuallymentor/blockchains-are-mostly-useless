@@ -3,6 +3,13 @@ import { EPub } from '@lesjoursfr/html-to-epub'
 import { createObjectCsvWriter as createCsvWriter } from 'csv-writer'
 
 const { verbose } = process.env
+
+/**
+ * Write the epub to the build folder
+ * @param {Object[]} content - chapter objects from makeEpubHtml
+ * @param {Object} meta - book meta, see book.config.js
+ * @param {String} output - build folder
+ */
 export const makeEpub = async ( content, meta, output ) => {
 
 	// Bundled fonts travel inside the epub, the css references them as fonts/<file>

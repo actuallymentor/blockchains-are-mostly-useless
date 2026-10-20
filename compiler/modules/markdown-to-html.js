@@ -4,7 +4,13 @@ import { promises as fs } from 'fs'
 
 const { verbose } = process.env
 
-// Convert markdown chapters to the chapter objects html-to-epub expects: { title, data, ... }
+/**
+ * Convert markdown chapters to the chapter objects html-to-epub expects
+ * @param {String[]} mdstrs - chapter markdowns in reading order
+ * @param {String} sourcepath - book folder, fallback for the assets folder
+ * @param {Object} meta - book meta, see book.config.js
+ * @returns {Promise<{ title: String, data: String, beforeToc: Boolean, excludeFromToc: Boolean }[]>}
+ */
 export const makeEpubHtml = async ( mdstrs, sourcepath, meta ) => {
 
 	if( verbose ) console.log( 'START: Making epub html' )
