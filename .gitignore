@@ -1,5 +1,6 @@
-# Build output
+# Build output and live preview (npm run dev)
 build/
+.preview/
 
 # OS cruft
 .DS_Store

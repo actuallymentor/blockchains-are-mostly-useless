@@ -38,74 +38,38 @@ export const makeEpubHtml = async ( mdstrs, sourcepath, meta ) => {
 	return footnoteMd( chapters )
 }
 
-export const makeEmailHtml = async ( mdstrs, filterInArray, filterOutArray, meta ) => {
+/**
+ * Split the book into emails, one per ## section
+ * @param {String[]} mdstrs - chapter markdowns
+ * @param {String[]} [filter_in] - keep only chapters containing one of these strings
+ * @param {String[]} [filter_out] - drop chapters containing any of these strings
+ * @param {Object} meta - book meta, see book.config.js
+ * @returns {Promise<{ title: String, html: String }[]>} one entry per email
+ */
+export const makeEmailHtml = async ( mdstrs, filter_in, filter_out, meta ) => {
 
 	if( verbose ) console.log( 'START: Making email htmls' )
 
-	// if( filterInArray || filterOutArray ) console.log( 'Filtering from ', mdstrs.length, ' md strings' )
+	const contains_any = ( markdown, criteria ) => criteria.some( criterion => markdown.includes( criterion ) )
 
-	// ///////////////////////////////
-	// Filtering
-	// ///////////////////////////////
-	if( filterInArray ) {
+	const kept_chapters = mdstrs
+		.filter( markdown => !filter_in || contains_any( markdown, filter_in ) )
+		.filter( markdown => !filter_out || !contains_any( markdown, filter_out ) )
 
-		// Only keep things in the filter IN array
-		mdstrs = mdstrs.filter( markdown => {
+	// Each "## title" starts an email that runs until the next # or ## heading
+	const section_regex = /(?:^|\n)## (.*?)\n(.*?)(?=\n#{1,2} |$)/gs
+	const sections = Array.from( kept_chapters.join( '\n\n' ).matchAll( section_regex ) )
 
-			// See if any of the filters are in the markdown
-			const results = filterInArray.map( criterion => markdown.includes( criterion ) )
+	// Images are served from the Sendy upload folder
+	const asset_regex = new RegExp( meta.asset_prefix || './assets/', 'g' )
 
-			// Did any of them match true? Keep it.
-			return results.some( result => result )
-
-		} )
-
-	}
-
-	if( filterOutArray ) {
-
-		// Discard things in the filter OUT array
-		mdstrs = mdstrs.filter( markdown => {
-
-			// Check if the markdown contains any of the filters
-			const results = filterOutArray.map( criterion => markdown.includes( criterion ) )
-
-			// Did any of them match true? Discard.
-			return !results.some( result => result )
-
-		} )
-
-	}
-
-	// if( filterInArray || filterOutArray ) console.log( 'To ', mdstrs.length, ' md strings' )
-
-	// Parapgrphs placeholder
-	let paragraphs = []
-	// One big contat string of the mds
-	let mdstring = mdstrs.join( '\n\n' )
-	// Regex: don't match the # and ##, but match the title, then after match the part that comes until the next # or ##
-	// #{2} matches only subheadings #{1,2} would match all
-	// 0 if full match, 1 is title, 2 is content
-	let paragraphRegex = new RegExp( /(?:(?:^|\n)#{2} (.*?))(?:\n)(.*?)(?=\n#{1,2} |$)/, 'gs' )
-	// Run exec once
-	let matchPlaceholder = paragraphRegex.exec( mdstring )
-
-	// If exec if not yet exhausted keep execing
-	while( matchPlaceholder != null ) {
-		paragraphs.push(  matchPlaceholder )
-		matchPlaceholder = paragraphRegex.exec( mdstring )
-	}
-
-	if( verbose && ( filterInArray || filterOutArray ) ) console.log( 'Filtering from ', mdstrs.length )
-
-
-	let htmlified = paragraphs.map( paragraph => ( {
-		title: paragraph[1],
-		html: inlineFootnotes( emailMarkdown.render( paragraph[2] ) ).replace( new RegExp( meta.asset_prefix || './assets/', 'g' ), meta.sendy_book_asset_path )
+	const emails = sections.map( ( [ , title, markdown ] ) => ( {
+		title,
+		html: inlineFootnotes( emailMarkdown.render( markdown ) ).replace( asset_regex, meta.sendy_book_asset_path )
 	} ) )
 
 	if( verbose ) console.log( 'END: Email html done' )
 
-	return htmlified
+	return emails
 
 }

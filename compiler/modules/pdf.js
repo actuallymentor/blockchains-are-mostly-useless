@@ -126,7 +126,7 @@ const copyAssets = async ( html, meta, output ) => {
 // see https://kdp.amazon.com/en_US/help/topic/G201953020
 const reportPrintSpecs = async pdf => {
 
-	const { stdout } = await exec( 'gs', [ '-q', '-dNODISPLAY', '-dNOSAFER', `--permit-file-read=${ pdf }`, '-c', `(${ pdf }) (r) file runpdfbegin pdfpagecount = quit` ] )
+	const { stdout } = await exec( 'gs', [ '-q', '-dNODISPLAY', '-dSAFER', `--permit-file-read=${ pdf }`, '-c', `(${ pdf }) (r) file runpdfbegin pdfpagecount = quit` ] )
 	const pages = Number( stdout.trim() )
 	const spine = ( pages * 0.0025 ).toFixed( 4 )
 

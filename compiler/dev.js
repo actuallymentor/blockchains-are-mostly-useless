@@ -13,6 +13,9 @@ import { makePdfHtmls, writePdfHtmls, browser, vivliostyle_bin } from './modules
 
 const variant = process.argv[2] == 'digital' ? 'digital' : 'print'
 
+// Separate from build/ so `npm start` can wipe the build while the preview keeps running
+const preview = `${ path.build }/../.preview`
+
 // Version stamps normally come from git in npm start
 process.env.lastedit ??= 'preview'
 process.env.bookversion ??= 'draft'
@@ -20,11 +23,11 @@ process.env.bookversion ??= 'draft'
 // Regenerate the html and css that the viewer shows, the viewer reloads when they change on disk
 const prepare = async () => {
 
-	await fs.mkdir( path.build, { recursive: true } )
-	await compileStyles( path )
+	await fs.mkdir( preview, { recursive: true } )
+	await compileStyles( path, preview )
 
 	const markdowns = await readBook( path.source )
-	await writePdfHtmls( makePdfHtmls( meta, markdowns ), meta, path.build )
+	await writePdfHtmls( makePdfHtmls( meta, markdowns ), meta, preview )
 
 }
 
@@ -45,7 +48,7 @@ for( const folder of [ path.source, path.styles, path.assets ] ) watch( folder, 
 const headless = process.platform == 'linux' && !process.env.DISPLAY && !process.env.WAYLAND_DISPLAY
 
 const viewer = spawn( vivliostyle_bin, [
-	'preview', `${ path.build }/${ meta.title }-${ variant }.html`,
+	'preview', `${ preview }/${ meta.title }-${ variant }.html`,
 	'--browser', browser,
 	'--sandbox',
 	...headless ? [ '--no-open-viewer', '--host', '0.0.0.0' ] : []
