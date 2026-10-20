@@ -20,16 +20,17 @@ const status = async url => {
 
 	const options = {
 		redirect: 'follow',
-		signal: AbortSignal.timeout( 20_000 ),
 		headers: { 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Safari/537.36' }
 	}
 
+	const request = method => fetch( url, { ...options, method, signal: AbortSignal.timeout( 20_000 ) } )
+
 	try {
 
-		// Some servers don't implement HEAD, retry those with GET
-		const head = await fetch( url, { ...options, method: 'HEAD' } )
-		if( head.ok ) return head.status
-		return ( await fetch( url, options ) ).status
+		// Some servers ignore or reject HEAD, retry those with GET
+		const head = await request( 'HEAD' ).catch( () => null )
+		if( head?.ok ) return head.status
+		return ( await request( 'GET' ) ).status
 
 	} catch( error ) {
 		return error.cause?.code || error.name
