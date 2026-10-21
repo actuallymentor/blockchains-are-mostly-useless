@@ -71,6 +71,10 @@ I've been involved in the blockchain community (if that can be said to exist) fo
 
 As far as my opinions go, I am not going to fit into a neat bucket of "crypto bro" or "crypto sceptic". I see blockchains like any programming tool: as useful as their suitability to a task. And they are completely unsuitable for the vast majority of applications programmers make. As a general rule, I'm very comfortable with changing my opinion on most things, and I see doing so as a sign of intellectual growth.
 
+## Building the book
+
+The book is plain markdown in [`book/`](./book), compiled to pdf, epub and email by [`compiler/`](./compiler) (see its [README](./compiler/README.md)). Tagging `v*` publishes a release.
+
 ## Want to talk?
 
 If you have questions or comments, please feel free to reach out on [Twitter/X](https://twitter.com/actuallymentor).

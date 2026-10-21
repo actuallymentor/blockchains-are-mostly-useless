@@ -1,0 +1,27 @@
+@use "sass:list";
+
+// ///////////////////////////////
+// Bundled fonts (SIL OFL, see compiler/fonts)
+// Paths are relative to the compiled css, the build copies fonts/ next to it
+// ///////////////////////////////
+$faces: (
+  "PT Serif": "PT_Serif-Web",
+  "PT Sans": "PT_Sans-Web"
+);
+$styles: (
+  "Regular": ( normal, normal ),
+  "Italic": ( normal, italic ),
+  "Bold": ( bold, normal ),
+  "BoldItalic": ( bold, italic )
+);
+
+@each $family, $file in $faces {
+  @each $variant, $props in $styles {
+    @font-face {
+      font-family: $family;
+      font-weight: list.nth( $props, 1 );
+      font-style: list.nth( $props, 2 );
+      src: url( "fonts/#{ $file }-#{ $variant }.ttf" ) format( "truetype" );
+    }
+  }
+}

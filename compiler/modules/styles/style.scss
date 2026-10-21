@@ -1,3 +1,8 @@
+@use "sass:meta";
+@use "_variables.scss";
+
+@include meta.load-css( "_fonts.scss" );
+
 // Cross platform centering
 .center {
   height: 100%;
@@ -41,9 +46,7 @@
   padding: .5rem .5rem .5rem 0;
 }
 
-@import "_variables.scss";
-@import "_pdf.scss";
-@import "_epub_recs.scss";
-@import "_screen_only.scss";
-@import "_epub_only.scss";
-@import "_typography.scss";
+@include meta.load-css("_pdf.scss");
+@include meta.load-css("_epub_recs.scss");
+@include meta.load-css("_screen_only.scss");
+@include meta.load-css("_typography.scss");

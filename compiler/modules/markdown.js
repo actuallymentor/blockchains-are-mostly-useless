@@ -6,20 +6,21 @@ const mdEmail = new mdit( { html: true, xhtmlOut: true } )
 
 // Import relevant plugins
 import footnotes  		from 'markdown-it-footnote'
-import toc 		  		from 'markdown-it-table-of-contents'
 import anchors 	  		from 'markdown-it-anchor' // Required for linkable toc
-import hierarchy  		from 'markdown-it-hierarchy' // Add hierarchy numbes to headings. e,g, 1.1 Chapter 1.2 Subsection
+import hierarchy  		from './hierarchy.js' // Add hierarchy numbers to headings. e,g, 1.1 Chapter 1.2 Subsection
 import implicitFigures 	from 'markdown-it-implicit-figures'
 
 // Apply relevant plugins to the markdown package
 mdEPUB.use( footnotes )
 mdEPUB.use( hierarchy )
 
-// Since the epub already has a built in TOC we only include toc stuff for the pfd gen
+// Pdf headings need ids for the generated toc
 mdPDF.use( footnotes )
 // mdPDF.use( hierarchy )
-mdPDF.use( toc )
-mdPDF.use( anchors )
+// Plain ascii ids, so toc links and target-counter() never trip over encoding
+mdPDF.use( anchors, {
+	slugify: title => title.toLowerCase().replace( /[^a-z0-9]+/g, '-' ).replace( /^-|-$/g, '' )
+} )
 mdPDF.use( implicitFigures, {
 	figcaption: true
 } )

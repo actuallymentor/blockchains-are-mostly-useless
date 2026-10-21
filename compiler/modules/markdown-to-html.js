@@ -1,153 +1,81 @@
-import { pdfMarkdown, epubMarkdown, emailMarkdown } from './markdown'
-import { footnoteMd, footnotePdf, footnoteSingle, decorateHrefs, addVersioningData } from './html-decorators'
+import { epubMarkdown, emailMarkdown } from './markdown.js'
+import { footnoteMd, inlineFootnotes, addVersioningData } from './html-decorators.js'
 import { promises as fs } from 'fs'
-import { inlineSource } from 'inline-source'
 
 const { verbose } = process.env
 
-// Convert MD strings to html and return them in a format friendly to the eoub module { data: <html> }
+/**
+ * Convert markdown chapters to the chapter objects html-to-epub expects
+ * @param {String[]} mdstrs - chapter markdowns in reading order
+ * @param {String} sourcepath - book folder, fallback for the assets folder
+ * @param {Object} meta - book meta, see book.config.js
+ * @returns {Promise<{ title: String, data: String, beforeToc: Boolean, excludeFromToc: Boolean }[]>}
+ */
 export const makeEpubHtml = async ( mdstrs, sourcepath, meta ) => {
 
 	if( verbose ) console.log( 'START: Making epub html' )
 
-	let assetPath = await fs.realpath( meta.asset_path || `${sourcepath}/assets` )
-	let htmlarray = mdstrs.map( mdstr => {
-		// Generate chapter title from the first h1
-		let title = mdstr.match( /(?<=# ).*/ )
+	const asset_path = await fs.realpath( meta.asset_path || `${ sourcepath }/assets` )
 
-		// Make asset regex based on the meta.asset_prefix, or use ./assets/ as default
-		const asset_replace_regex = new RegExp( meta.asset_prefix || './assets/', 'g' )
+	// Readers ship their own navigation, so the file with the [[TOC]] placeholder is dropped
+	// and everything before it becomes front matter shown ahead of the reader's toc
+	const toc_index = mdstrs.findIndex( mdstr => mdstr.includes( '[[TOC]]' ) )
+
+	const chapters = mdstrs.map( ( mdstr, index ) => {
+
+		if( index == toc_index ) return
+
+		// Chapter title comes from the first markdown h1
+		const [ title ] = mdstr.match( /(?<=^# ).*/m ) || []
+		const front = index < toc_index
 
 		return {
-			// If a title exists apply it
-			title: title ? title[0] : false,
-			// If there is no title don't show in toc
-			excludeFromToc: title ? false : true,
-			// Exclude the first h1 from the chapter content because epub shows the title
-			// Disabled the .replace( /(?<=^# ).*/, '' ) this since specifying appendChapterTitles: false
-			// Also disabled .replace( 'href="#fn', 'epub:type="noteref" href="#' ) because iBooks is a bitch
-			data: epubMarkdown.render( mdstr ).replace( asset_replace_regex, `file://${ assetPath }` )
+			title: title || meta.title,
+			excludeFromToc: !title,
+			beforeToc: front,
+			// html-to-epub embeds local images when they are file:// urls
+			data: addVersioningData( epubMarkdown.render( mdstr ) ).replaceAll( meta.asset_prefix || './assets', `file://${ asset_path }` )
 		}
-	} )
+
+	} ).filter( Boolean )
 
 	if( verbose ) console.log( 'END: Epub html done' )
 
-
-	return footnoteMd( htmlarray )
+	return footnoteMd( chapters )
 }
 
-export const makePdfHtmls = async ( meta, mdstrs, input, output ) => { 
-
-	if( verbose ) console.log( 'START: Making pdf html' )
-
-	// Plit sections for parsing below
-	let pretoc = [ ...mdstrs.slice( 0, 1 ) ].join( '\n\n' )
-	let toc   = [ ...mdstrs.slice( 1, 2 ) ].join( '\n\n' ) // Unused
-	let book  = [ ...mdstrs.slice( 2 ) ].join( '\n\n' )
-	let full = mdstrs.join( '\n\n' )
-
-	pretoc = addVersioningData( pdfMarkdown.render( pretoc ) )
-	book = addVersioningData( decorateHrefs( footnotePdf( pdfMarkdown.render( book ) ) ) )
-	full = addVersioningData( decorateHrefs( footnotePdf( pdfMarkdown.render( full ) ) ) )
-
-	// Join together all strings
-	const preTocHtml = `<span class='print pdf'><section class='pretoc'>${ pretoc }</section></span>`
-	const contentHtml = `<span class='print pdf'><section class='content'>${ book }</section></span>`
-	const fullHtml = `<span class='pdf'><section class='content'>${ full }</section></span>`
-
-	// I'm resetting the image path to the source folder, the templatePath option in the pdf generator adds the right directory prefix
-	// let pathified = html.replace( new RegExp( /\.\/assets/, 'g'), `file://${input}/assets` )
-
-	// Inlining the images because of puppeteer
-	const [ inlinedPreToc, inlinedContent, inlinedFullHtml ] = await Promise.all( [ preTocHtml, contentHtml, fullHtml ].map( html => {
-		return inlineSource( html, {
-			// inline all
-			attribute: false,
-			svgAsImage: true,
-			rootpath: input
-		} )
-	} ) )
-	
-	if( verbose ) console.log( 'START: Writing pdf html to file' )
-	// Write to html file
-	await fs.writeFile( `${output}/${meta.title}.html`, inlinedFullHtml )
-
-	if( verbose ) console.log( 'END: Pdf html done' )
-	return [ inlinedPreToc, inlinedContent, inlinedFullHtml ]
-}
-
-export const makeEmailHtml = async ( mdstrs, filterInArray, filterOutArray, meta ) => {
+/**
+ * Split the book into emails, one per ## section
+ * @param {String[]} mdstrs - chapter markdowns
+ * @param {String[]} [filter_in] - keep only chapters containing one of these strings
+ * @param {String[]} [filter_out] - drop chapters containing any of these strings
+ * @param {Object} meta - book meta, see book.config.js
+ * @returns {Promise<{ title: String, html: String }[]>} one entry per email
+ */
+export const makeEmailHtml = async ( mdstrs, filter_in, filter_out, meta ) => {
 
 	if( verbose ) console.log( 'START: Making email htmls' )
 
-	// if( filterInArray || filterOutArray ) console.log( 'Filtering from ', mdstrs.length, ' md strings' )
+	const contains_any = ( markdown, criteria ) => criteria.some( criterion => markdown.includes( criterion ) )
 
-	// ///////////////////////////////
-	// Filtering
-	// ///////////////////////////////
-	if( filterInArray ) {
+	const kept_chapters = mdstrs
+		.filter( markdown => !filter_in || contains_any( markdown, filter_in ) )
+		.filter( markdown => !filter_out || !contains_any( markdown, filter_out ) )
 
-		// Only keep things in the filter IN array
-		mdstrs = mdstrs.filter( markdown => {
+	// Each "## title" starts an email that runs until the next # or ## heading
+	const section_regex = /(?:^|\n)## (.*?)\n(.*?)(?=\n#{1,2} |$)/gs
+	const sections = Array.from( kept_chapters.join( '\n\n' ).matchAll( section_regex ) )
 
-			// See if any of the filters are in the markdown
-			const results = filterInArray.map( criterion => markdown.includes( criterion ) )
+	// Images are served from the Sendy upload folder
+	const asset_regex = new RegExp( meta.asset_prefix || './assets/', 'g' )
 
-			// Did any of them match true? Keep it.
-			return results.some( result => result )
-
-		} )
-
-	}
-
-	if( filterOutArray ) {
-
-		// Discard things in the filter OUT array
-		mdstrs = mdstrs.filter( markdown => {
-
-			// Check if the markdown contains any of the filters
-			const results = filterOutArray.map( criterion => markdown.includes( criterion ) )
-
-			// Did any of them match true? Discard.
-			return !results.some( result => result )
-
-		} )
-
-	}
-
-	// if( filterInArray || filterOutArray ) console.log( 'To ', mdstrs.length, ' md strings' )
-
-	// Parapgrphs placeholder
-	let paragraphs = []
-	// One big contat string of the mds
-	let mdstring = mdstrs.join( '\n\n' )
-	// Regex: don't match the # and ##, but match the title, then after match the part that comes until the next # or ##
-	// #{2} matches only subheadings #{1,2} would match all
-	// 0 if full match, 1 is title, 2 is content
-	let paragraphRegex = new RegExp( /(?:(?:^|\n)#{2} (.*?))(?:\n)(.*?)(?=\n#{1,2} |$)/, 'gs' )
-	// Run exec once
-	let matchPlaceholder = paragraphRegex.exec( mdstring )
-
-	// If exec if not yet exhausted keep execing
-	while( matchPlaceholder != null ) {
-		paragraphs.push(  matchPlaceholder )
-		matchPlaceholder = paragraphRegex.exec( mdstring )
-	}
-
-	if( verbose && ( filterInArray || filterOutArray ) ) console.log( 'Filtering from ', mdstrs.length )
-
-
-	let htmlified = paragraphs.map( paragraph => ( {
-		title: paragraph[1],
-		html: footnoteSingle( {
-			data: emailMarkdown
-					.render( paragraph[2] )
-					.replace( new RegExp( meta.asset_prefix || './assets/', 'g'), meta.sendy_book_asset_path )
-		} ).data
+	const emails = sections.map( ( [ , title, markdown ] ) => ( {
+		title,
+		html: inlineFootnotes( emailMarkdown.render( markdown ) ).replace( asset_regex, meta.sendy_book_asset_path )
 	} ) )
 
 	if( verbose ) console.log( 'END: Email html done' )
 
-	return htmlified
+	return emails
 
 }

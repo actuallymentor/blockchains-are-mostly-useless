@@ -1,2 +1,13 @@
+# Build output and live preview (npm run dev)
 build/
-.*
+.preview/
+
+# OS cruft
+.DS_Store
+
+# Private notes (launch plans, agent notes)
+.notes.md
+.notes/
+
+# Secrets
+.env*

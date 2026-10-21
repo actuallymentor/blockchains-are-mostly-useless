@@ -1,12 +1,4 @@
-// ///////////////////////////////
-// Print styling
-// ///////////////////////////////
-// Print order: pretoc, toc, content
-@page {
-  margin: $v-margin $h-margin;
-  size: $page-width $page-height;
-}
-
+@use "variables";
 
 // ///////////////////////////////
 // General PDF declarations
@@ -91,12 +83,15 @@
   // ///////////////////////////////
   h2, h3, h4, h5 {
 
-    & + p {
-      margin-top: .5rem;
-    }
-  
     // This is not zero because of the pdf page break hack
     margin-bottom: 0;
+    break-after: avoid-page;
+    break-inside: avoid-page;
+
+    & + p {
+      margin-top: .5rem;
+      break-before: avoid-page;
+    }
 
     // Hacky solution to non working break after
     &::after {
@@ -104,12 +99,6 @@
         display: block;
         height: 100px;
         margin-bottom: -100px;
-    }
-
-    break-after: avoid-page;
-    break-inside: avoid-page;
-    & + p {
-      break-before: avoid-page;
     }
   }
   ol, li, table {
@@ -134,11 +123,6 @@
   }
   figure {
 
-    // Space from figure above me
-    & + figure {
-      margin-top: $figure-spacing;
-    } 
-    
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -147,6 +131,11 @@
     text-align: center;
     margin: 0;
     break-inside: avoid-page;
+
+    // Space from figure above me
+    & + figure {
+      margin-top: $figure-spacing;
+    }
   }
 
 

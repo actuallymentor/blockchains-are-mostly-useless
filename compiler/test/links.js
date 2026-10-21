@@ -1,65 +1,78 @@
-import expect from './modules/expect'
+/**
+ * Checks every external link in the book, needs network access
+ * Dead links fail, links behind bot protection are only reported
+ */
+import { test } from 'node:test'
+import assert from 'node:assert/strict'
 import { promises as fs } from 'fs'
-import { normalize } from 'path'
+import { basename } from 'path'
 import mds from '../modules/fs.js'
-import request from 'request-promise-native'
 
-// Match all []() markdown links
-const urls = str => Array.from( str.matchAll( /(?:\[.*\])(?:\()((?:http).*?)(?:\))/g ), m => m[1] )
+const book = `${ import.meta.dirname }/../../book`
 
-// Wait helper
-const wait = ms => new Promise( resolve => setTimeout( resolve, ms ) )
+// Sites that answer bots with these codes are usually fine for humans
+const blocked_codes = [ 401, 403, 429, 999 ]
 
-// CHeck if url is broken
-const isBroken = link => Promise.race( [
-	request( {
-		uri: link.url,
-		resolveWithFullResponse: true,
-		headers: {
-	        'User-Agent': 'Chrome/79.0.3945.117'
-	    }
-	} ),
-	wait( 20000 ).then( f => ( { statusCode: 'throw' } ) )
-] )
-.then( ( { statusCode } ) => statusCode == 200 ? false : { ...link, code: statusCode } )
-.catch( ( { statusCode, name, message, ...other } ) => ( { ...link, code: statusCode || name || message || other } ) )
-.finally( f => {
-	if( process.env.verbose ) console.log( 'Done testing ', link )
-} )
+// Match all [text](http...) markdown links
+const urls = markdown => Array.from( markdown.matchAll( /\[[^\]]*\]\((https?:\/\/[^)\s]+)\)/g ), ( [ , url ] ) => url )
 
-describe( 'Links in the book', function( ) {
+const status = async url => {
 
-	this.timeout( 1000 * 60 * 10 )
+	const options = {
+		redirect: 'follow',
+		headers: { 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Safari/537.36' }
+	}
 
-	it( 'are all valid', async function() {
+	const request = method => fetch( url, { ...options, method, signal: AbortSignal.timeout( 20_000 ) } )
 
-		// Get the paths to markdowns
-		const paths = await mds( `${__dirname}/../../` )
+	try {
 
-		// Get markdown and fix footnoe structure to match npm module syntax
-		const markdowns = await Promise.all( paths.map( async path => ( {
-			path: normalize( path ), content: await fs.readFile( path, 'utf8' )
-		} ) ) )
+		// Some servers ignore or reject HEAD, retry those with GET
+		const head = await request( 'HEAD' ).catch( () => null )
+		if( head?.ok ) return head.status
+		return ( await request( 'GET' ) ).status
 
-		const linksByFile = markdowns.map( md => ( {
-			path: md.path,
-			urls: urls( md.content )
-		} ) )
+	} catch( error ) {
+		return error.cause?.code || error.name
+	}
 
-		let linksWithFile = linksByFile.map( file => {
-			return file.urls.map( url => ( { url: url, path: file.path } ) )
-		} ).flat()
+}
 
-		if( process.env.verbose ) console.log( 'Validating ', linksWithFile.length, ' links' )
+// Run promises a few at a time so we don't hammer anyone
+const throttled = async ( items, worker, lanes = 8 ) => {
 
-		const broken = await Promise.all( linksWithFile.map( link => isBroken( link ) ) )
-		const filtered = broken.filter( notfalse => notfalse )
+	const results = []
 
-		if( process.env.verbose && filtered.length > 0 ) await fs.writeFile( `${__dirname}/../broken-links.json`, JSON.stringify( filtered, null, 2 ) )
-		if( process.env.verbose && filtered.length > 0 ) console.log( filtered.length, ' links are broken: ', filtered )
+	// Every lane pulls the next item from one shared iterator until it runs dry
+	const queue = items.entries()
+	const lane = async () => {
+		for( const [ index, item ] of queue ) results[ index ] = await worker( item )
+	}
 
-		return filtered.should.have.length( 0 )
+	await Promise.all( Array.from( { length: lanes }, lane ) )
+	return results
 
-	} )
+}
+
+test( 'links in the book are alive', { timeout: 10 * 60_000 }, async () => {
+
+	const paths = await mds( book )
+	const links = ( await Promise.all( paths.map( async path => {
+		const markdown = await fs.readFile( path, 'utf8' )
+		return urls( markdown ).map( url => ( { url, file: basename( path ) } ) )
+	} ) ) ).flat()
+
+	assert.ok( links.length > 0, 'found no links, is the book path right?' )
+
+	const checked = await throttled( links, async link => ( { ...link, status: await status( link.url ) } ) )
+
+	const blocked = checked.filter( ( { status } ) => blocked_codes.includes( status ) )
+	const dead = checked.filter( ( { status } ) => !blocked_codes.includes( status ) && !( status >= 200 && status < 400 ) )
+
+	console.log( `Checked ${ links.length } links: ${ dead.length } dead, ${ blocked.length } blocked by bot protection` )
+	for( const { file, url, status } of blocked ) console.log( `  blocked ${ status } ${ url } (${ file })` )
+	for( const { file, url, status } of dead ) console.log( `  DEAD ${ status } ${ url } (${ file })` )
+
+	assert.deepEqual( dead, [] )
 
 } )

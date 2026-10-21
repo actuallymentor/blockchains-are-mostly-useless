@@ -1,49 +1,39 @@
-@import "_variables.scss";
+@use "_variables.scss" as variables;
 
-// Print order: pretoc, toc, content
-// The frst page (chap not toc) is the left 
+// ///////////////////////////////
+// Print-only rules for the KDP paperback, layered on top of pdf.css
+// ///////////////////////////////
+
+// Wider inner margin (gutter) towards the spine
 @page :left {
-	margin-right: $v-margin*$spine-offset-factor;
+	margin-right: variables.$v-margin * variables.$spine-offset-factor;
 }
 @page :right {
-	margin-left: $h-margin*$spine-offset-factor;
+	margin-left: variables.$h-margin * variables.$spine-offset-factor;
 }
 
-.noprint {
-	display: none;
-}
-
-.pdf {
-
-	&.print {
-
-		// Print version
-		#pdfcover {
-			display: none;
-		}
-
-		#pdftoctitle {
-			margin: 0;
-		}
-
-		.table-of-contents {
-
-			padding: 1rem;
-			ul {
-				font-size: .8rem;
-				ul li { display: none; }
-				li { 
-					margin: 0;
-					padding: 2px 0;
-					}
-				}
-				a {
-				color: black;
-				}
-			}
-			a {
-				color: black;
-			}
-		}
-		
+// Folios sit on the outer edge: left on verso pages, right on recto pages
+@page :left {
+	@bottom-right { content: none; }
+	@bottom-left {
+		content: counter( page );
+		font-size: 9px;
+		vertical-align: middle;
 	}
+}
+
+// Front matter and toc carry no folio
+@page front {
+	@bottom-left { content: none; }
+	@bottom-right { content: none; }
+}
+.front, .toc { page: front; }
+
+// The book proper starts on a recto page
+// Folios count from the first physical page: Vivliostyle breaks target-counter() when the page counter is reset
+.content { break-before: right; }
+
+.noprint, #pdfcover { display: none; }
+
+// No colour on paper
+.print a { color: black; }
