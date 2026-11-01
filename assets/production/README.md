@@ -34,6 +34,8 @@ The bundled PT Serif fonts provide editable, embedded back-cover lettering.
 Always upload the interior and wrap from the **same build**. The checked-in
 snapshots currently use 60 pages: 0.15-inch spine, 12.4×9.25-inch full wrap.
 The build derives the spine from the final PDF, rounding an odd count up to even.
+The wrap front scales uniformly to fill the bleed, with a small symmetric crop
+at trim (163.8 native PPI including bleed). Separate front exports remain uncropped.
 No spine text; the white 2×1.2-inch area is reserved for KDP's barcode.
 
 ## Remaining print-quality issue
@@ -46,7 +48,7 @@ master before final submission. A physical proof is also advisable.
 
 The built-in image tool's attempted resolution remake also returned 1024×1536;
 it was discarded to preserve the exact approved image. A larger source should
-be at least 1800×2700 (same 2:3 ratio). Replace `assets/cover.png`, then rebuild.
+be at least 2000×3000 to retain 300 PPI including bleed (same 2:3 ratio). Replace `assets/cover.png`, then rebuild.
 The interiors have sufficient source resolution at their placed size.
 
 The old `.afdesign` files, 63-page template and `assets/social/` are legacy

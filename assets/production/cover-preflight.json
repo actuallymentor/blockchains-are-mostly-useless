@@ -12,7 +12,7 @@
   "bleed_inches": 0.125,
   "spine_inches": 0.15,
   "wrap_inches": [
-    12.399999999999999,
+    12.4,
     9.25
   ],
   "front_source_pixels": [
@@ -20,13 +20,14 @@
     1536
   ],
   "front_native_ppi": 170.67,
+  "wrap_front_native_ppi": 163.84,
   "raster_export_ppi": 300,
   "spine_text": false,
   "barcode": "Reserved 2 x 1.2 inches; KDP supplies barcode",
   "interior_sha256": "49f0f837e9bec2f2b2b837d77310de231ce5aa24acbc090c41ab7f6068c3d8f4",
   "front_sha256": "5ef083a9430c31876ed8900fba8022cfbb602a59a75cc0881abe3d6339931dba",
   "warnings": [
-    "Selected C12-F source is below 300 PPI at 6x9. Raster exports are 300 DPI, but do not add source detail. Obtain a higher-resolution master before submission and inspect a physical proof."
+    "Selected C12-F source is below 300 PPI in the full wrap. Raster exports are 300 DPI, but do not add source detail. Obtain a higher-resolution master before submission and inspect a physical proof."
   ],
   "specification": "https://kdp.amazon.com/en_US/help/topic/G201953020"
 }

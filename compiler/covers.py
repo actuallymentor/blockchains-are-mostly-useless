@@ -31,7 +31,7 @@ NAVY, ORANGE, CREAM = "#082640", "#F45111", "#FCF9EF"
 
 
 def command(*args):
-    subprocess.run([str(arg) for arg in args], check=True, capture_output=True)
+    subprocess.run([str(arg) for arg in args], check=True)
 
 
 def pdf_file(suffix):
@@ -65,7 +65,9 @@ def draw_back(page, x, y, copy):
         page.setFillColor(HexColor(NAVY))
         page.setFont("BookBold", 10)
         page.drawString(left, cursor, endorsement["author"])
-        cursor -= 28
+        page.setFont("Book", 9)
+        page.drawString(left, cursor - 14, endorsement["affiliation"])
+        cursor -= 42
     if cursor < 130:
         raise ValueError("Back copy enters the reserved barcode area")
     # KDP supplies the barcode. No fake ISBN or template labels in the upload.
@@ -119,8 +121,17 @@ def build(update_assets=False):
     rgb_wrap = pdf_file("kdp-cover-rgb")
     page = new_pdf(rgb_wrap, full_w, full_h)
     draw_back(page, BLEED, BLEED, copy)
-    page.drawImage(str(front), BLEED + TRIM_W + spine, BLEED,
-                   width=TRIM_W, height=TRIM_H)
+    # Fill the outer bleed with actual artwork, cropped symmetrically at trim.
+    front_x = BLEED + TRIM_W + spine
+    art_width = max(TRIM_W + 2 * BLEED, full_h * image_w / image_h)
+    art_height = art_width * image_h / image_w
+    page.saveState()
+    clip = page.beginPath()
+    clip.rect(front_x, 0, TRIM_W + BLEED, full_h)
+    page.clipPath(clip, stroke=0)
+    page.drawImage(str(front), front_x + (TRIM_W - art_width) / 2, (full_h - art_height) / 2,
+                   width=art_width, height=art_height)
+    page.restoreState()
     # The narrow spine stays blank, including if future edits reach 80 pages.
     page.showPage()
     page.save()
@@ -138,17 +149,20 @@ def build(update_assets=False):
     wrap_png = raster(wrap, "kdp-cover")
     wrap_jpg = raster(wrap, "kdp-cover", jpeg=True)
     native_ppi = min(image_w / 6, image_h / 9)
+    wrap_ppi = image_w / (art_width / INCH)
     report = {
         "selected_front": "C12-F", "interior_pages": pages, "kdp_pages": kdp_pages,
         "paper": "cream", "ink": "black", "interior_bleed": False,
         "trim_inches": [6, 9], "bleed_inches": 0.125,
-        "spine_inches": spine / INCH, "wrap_inches": [full_w / INCH, full_h / INCH],
+        "spine_inches": round(spine / INCH, 4),
+        "wrap_inches": [round(full_w / INCH, 4), round(full_h / INCH, 4)],
         "front_source_pixels": [image_w, image_h], "front_native_ppi": round(native_ppi, 2),
+        "wrap_front_native_ppi": round(wrap_ppi, 2),
         "raster_export_ppi": 300, "spine_text": False,
         "barcode": "Reserved 2 x 1.2 inches; KDP supplies barcode",
         "interior_sha256": hashlib.sha256(print_pdf.read_bytes()).hexdigest(),
         "front_sha256": hashlib.sha256(front.read_bytes()).hexdigest(),
-        "warnings": (["Selected C12-F source is below 300 PPI at 6x9. Raster exports are 300 DPI, but do not add source detail. Obtain a higher-resolution master before submission and inspect a physical proof."] if native_ppi < 300 else []),
+        "warnings": (["Selected C12-F source is below 300 PPI in the full wrap. Raster exports are 300 DPI, but do not add source detail. Obtain a higher-resolution master before submission and inspect a physical proof."] if wrap_ppi < 300 else []),
         "specification": "https://kdp.amazon.com/en_US/help/topic/G201953020"
     }
     (BUILD / "cover-preflight.json").write_text(json.dumps(report, indent=2) + "\n")

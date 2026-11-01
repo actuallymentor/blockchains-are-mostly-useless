@@ -5,6 +5,7 @@ Book editions are git tags (`v*`, see releases). This log tracks the compiler an
 ## [2.1.0] - 2026-11-01
 
 ### Added
+- Extend cover artwork into bleed; preserve endorsement affiliations.
 - Generate front/back and page-count-specific KDP covers with every full build.
 - Include cover exports and resolution preflight in CI artifacts and releases.
 - Preserve selected-art IDs and hashes for all eight interior illustrations.
