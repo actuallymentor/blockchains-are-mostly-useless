@@ -50,7 +50,7 @@ jobs:
 
       # ghostscript makes the grayscale print pdf, poppler-utils powers npm run verify
       - name: Install system tools
-        run: sudo apt-get update && sudo apt-get install -y ghostscript poppler-utils
+        run: sudo apt-get update && sudo apt-get install -y ghostscript poppler-utils python3-reportlab python3-pypdf
 
       # Ubuntu 24.04 blocks the user namespaces the Chrome sandbox needs
       - name: Allow the Chrome sandbox
@@ -96,6 +96,10 @@ jobs:
             build/*-print.pdf
             build/*.epub
             build/*.csv
+            build/*-cover.pdf
+            build/*-cover.png
+            build/*-cover.jpg
+            build/cover-preflight.json
 
   release:
     name: Publish release
@@ -124,3 +128,7 @@ jobs:
             build/*-digital.pdf
             build/*-print.pdf
             build/*.epub
+            build/*-cover.pdf
+            build/*-cover.png
+            build/*-cover.jpg
+            build/cover-preflight.json

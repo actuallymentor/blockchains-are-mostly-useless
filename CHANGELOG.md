@@ -2,6 +2,21 @@
 
 Book editions are git tags (`v*`, see releases). This log tracks the compiler and build pipeline (`compiler/package.json`).
 
+## [2.1.0] - 2026-11-01
+
+### Added
+- Generate front/back and page-count-specific KDP covers with every full build.
+- Include cover exports and resolution preflight in CI artifacts and releases.
+- Preserve selected-art IDs and hashes for all eight interior illustrations.
+
+### Changed
+- Integrate the selected expressive-cat suite and C12-F cover into all formats.
+- Rebuild the back with existing endorsements and a reserved barcode area.
+- Update chapter alt text and checked-in front/wrap previews.
+
+### Known limitations
+- C12-F remains 1024×1536; print submission needs a higher-resolution master.
+
 ## [2.0.0] - 2026-10-20
 
 ### Breaking

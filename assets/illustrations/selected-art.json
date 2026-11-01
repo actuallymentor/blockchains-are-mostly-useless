@@ -1,0 +1,78 @@
+{
+  "selection_round": "06",
+  "note": "Selected in visual exploration Round05 and confirmed in Round06. PNGs copied unchanged; hashes identify the source artwork independently of gallery history.",
+  "illustrations": [
+    {
+      "original_id": "I01",
+      "alternative_id": "I01-A07",
+      "style_id": "S34",
+      "file": "fighter-jet-delivering-packages.png",
+      "source_path": "visual-exploration/images/S34.png",
+      "sha256": "89c44bf85cdd7c14f298a718caf926ee777d646292d30ecf932776046cd77f80",
+      "alt": "A skeptical lid-wearing cat watches a fighter jet deliver a tiny parcel."
+    },
+    {
+      "original_id": "I02",
+      "alternative_id": "I02-A15",
+      "style_id": "S39",
+      "file": "cat-wearing-lid-as-hat.png",
+      "source_path": "visual-exploration/images/S39.png",
+      "sha256": "ea88600015da53485f3f5c8f777944f133eccc8b440d8241c2da4eec078c4674",
+      "alt": "A baffled loaf-shaped cat looks up at the orange lid worn as a hat."
+    },
+    {
+      "original_id": "I03",
+      "alternative_id": "I03-A04",
+      "style_id": "S41",
+      "file": "spreadsheet.png",
+      "source_path": "visual-exploration/images/S41.png",
+      "sha256": "0d3b861bc0ba7d41fc89231d6ea258d13789487d18ff35ae7a8284a1fa199c40",
+      "alt": "A lid-wearing cat follows a row in an open account ledger with its paw."
+    },
+    {
+      "original_id": "I04",
+      "alternative_id": "I04-A03",
+      "style_id": "S43",
+      "file": "box-of-spreadsheets.png",
+      "source_path": "visual-exploration/images/S43.png",
+      "sha256": "2584c30fd233ca295d604015076c65d8769016e780c4da3ade8a25a293d42c8e",
+      "alt": "Three linked boxes hold records; a pleased cat occupies the last box."
+    },
+    {
+      "original_id": "I05",
+      "alternative_id": "I05-A06",
+      "style_id": "S46",
+      "file": "cat-scratching-cd.png",
+      "source_path": "visual-exploration/images/S46.png",
+      "sha256": "fbd6276a5a1a4297c24b1f1965985036f6905ac5ffd76b57597c6f4ff8b8e321",
+      "alt": "A guilty-looking cat crouches beside a disc, scratching it with its paw."
+    },
+    {
+      "original_id": "I06",
+      "alternative_id": "I06-A05",
+      "style_id": "S51",
+      "file": "walkie-talkies.png",
+      "source_path": "visual-exploration/images/S51.png",
+      "sha256": "f31dbdfb2b5da62aa270bd2a8cc06b068a37f900f3f046e0787347c35c7de0d5",
+      "alt": "Three lid-wearing cats react differently beside their own walkie-talkies."
+    },
+    {
+      "original_id": "I07",
+      "alternative_id": "I07-A04",
+      "style_id": "S53",
+      "file": "open-padlock.png",
+      "source_path": "visual-exploration/images/S53.png",
+      "sha256": "f8498967dda0c1b4d49a45e449b28d8620a602266b5e3a6a19d855b94e38eeed",
+      "alt": "A confident lid-wearing cat walks through an open doorway."
+    },
+    {
+      "original_id": "I08",
+      "alternative_id": "I08-A05",
+      "style_id": "S57",
+      "file": "judge.png",
+      "source_path": "visual-exploration/images/S57.png",
+      "sha256": "424e10b75315ce7257546d9f1787d4554fef7969131fbc6775ca0ac2b156be1d",
+      "alt": "Two lid-wearing cats inspect a shared balance with equal weights."
+    }
+  ]
+}
