@@ -73,7 +73,7 @@ As a programmer, I have built "regular" applications that have nothing to do wit
 I've been involved in the blockchain community (if that can be said to exist) for a while. I'm by no means a key player in any aspect of it but have a very visible record of not being a complete idiot, some illustrations of this are that I:
 
 - was [interviewed by Bitcoin magazine](https://bitcoinmagazine.com/culture/an-interview-with-mentor-palokaj-of-bluevpn-1374705552) in 2013, which honestly was because I was advertising my VPN side project and they were nice
-- [participated](https://app.poap.xyz/token/2331056) in the Ethereum crowd sale. It was on a student budget, so I'm not as rich as that statement makes it sound
+- [participated](https://gnosisscan.io/token/0x22c1f6050e56d2876009903609a2cc3fef83b415/instance/2331056) in the Ethereum crowd sale. It was on a student budget, so I'm not as rich as that statement makes it sound
 - [Translated the Ethereum Mist wallet](https://github.com/ethereum/mist/pull/618), which was the first official Ethereum wallet, to my native Dutch in 2016
 
 As far as my opinions go, I am not going to fit into a neat bucket of "crypto bro" or "crypto sceptic". I see blockchains like any programming tool: as useful as their suitability to a task. And they are completely unsuitable for the vast majority of applications programmers make. As a general rule, I'm very comfortable with changing my opinion on most things, and I see doing so as a sign of intellectual growth.

@@ -1,6 +1,15 @@
 # Changelog
 
-Book editions are git tags (`v*`, see releases). This log tracks the compiler and build pipeline (`compiler/package.json`).
+Book editions are git tags (`v*`, see releases). Compiler versions refer to `compiler/package.json`.
+
+## Book — Unreleased (2026-11-03)
+
+### Changed
+- apply author-approved audit wording, figures, footnotes and source links
+- update Tether count to 2,382 Ethereum addresses (24 August 2026)
+- correct spelling and author-approved grammar; retain declined wording
+- update Aave active loans to about $12 billion (2026), per author approval
+- correct stablecoin volume to $33 trillion per year, per author wording
 
 ## [2.1.0] - 2026-11-01
 
