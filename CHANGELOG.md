@@ -5,6 +5,7 @@ Book editions are git tags (`v*`, see releases). Compiler versions refer to `com
 ## Book — Unreleased (2026-11-03)
 
 ### Changed
+- remove completed edition-review markers from manuscript sources
 - apply author-approved audit wording, figures, footnotes and source links
 - update Tether count to 2,382 Ethereum addresses (24 August 2026)
 - correct spelling and author-approved grammar; retain declined wording
