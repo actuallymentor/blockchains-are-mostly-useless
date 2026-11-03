@@ -9,7 +9,7 @@ Book editions are git tags (`v*`, see releases). Compiler versions refer to `com
 - update Tether count to 2,382 Ethereum addresses (24 August 2026)
 - correct spelling and author-approved grammar; retain declined wording
 - update Aave active loans to about $12 billion (2026), per author approval
-- retain disputed stablecoin-volume passage pending author decision
+- correct stablecoin volume to $33 trillion per year, per author wording
 
 ## [2.0.0] - 2026-10-20
 
