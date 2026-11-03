@@ -2,13 +2,14 @@
 
 Book editions are git tags (`v*`, see releases). Compiler versions refer to `compiler/package.json`.
 
-## Book — Unreleased (2026-11-02)
+## Book — Unreleased (2026-11-03)
 
 ### Changed
 - apply author-approved audit wording, figures, footnotes and source links
 - update Tether count to 2,382 Ethereum addresses (24 August 2026)
-- correct spelling; leave grammar questions for author review
-- retain disputed passages and Aave loan figures pending author decisions
+- correct spelling and author-approved grammar; retain declined wording
+- update Aave active loans to about $12 billion (2026), per author approval
+- retain disputed stablecoin-volume passage pending author decision
 
 ## [2.0.0] - 2026-10-20
 
