@@ -1,6 +1,6 @@
 {
   "name": "book-compiler",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Compiles markdown to epub, pdf and email csv",
   "main": "app.js",
   "scripts": {
@@ -9,7 +9,9 @@
     "links": "node --test test/links.js",
     "lint": "eslint .",
     "verify": "node --test test/build.test.js",
-    "dev": "node dev.js"
+    "dev": "node dev.js",
+    "covers": "/usr/bin/python3 covers.py",
+    "covers:update": "/usr/bin/python3 covers.py --update-assets"
   },
   "repository": {
     "type": "git",

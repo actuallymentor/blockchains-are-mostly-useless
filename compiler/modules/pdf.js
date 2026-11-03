@@ -122,15 +122,13 @@ const copyAssets = async ( html, meta, output ) => {
 
 }
 
-// KDP cream paper is 0.0025 inch per page, spine text is only allowed from 79 pages
-// see https://kdp.amazon.com/en_US/help/topic/G201953020
+// Cover generation reports the spine after applying KDP page-count rounding.
 const reportPrintSpecs = async pdf => {
 
 	const { stdout } = await exec( 'gs', [ '-q', '-dNODISPLAY', '-dSAFER', `--permit-file-read=${ pdf }`, '-c', `(${ pdf }) (r) file runpdfbegin pdfpagecount = quit` ] )
 	const pages = Number( stdout.trim() )
-	const spine = ( pages * 0.0025 ).toFixed( 4 )
 
-	console.log( `Print pdf: ${ pages } pages, cream spine width ${ spine } inch${ pages < 79 ? ', too thin for spine text' : '' }` )
+	console.log( `Print pdf: ${ pages } pages` )
 	if( pages % 2 ) console.warn( 'Print pdf has an odd page count, KDP will add a blank last page' )
 
 }

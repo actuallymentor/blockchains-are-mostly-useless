@@ -9,6 +9,13 @@ This book concisely covers why blockchains are unsuited to most tasks, and in wh
 
 Alternatively, you can also find the publishing history and the associated files in the [release](https://github.com/actuallymentor/blockchains-are-mostly-useless/releases/) section of this repository.
 
+## Updated edition artwork
+
+The updated artwork is integrated into the book build: eight selected cat
+illustrations, the C12-F front and a matching back. Run `npm start` in `compiler/`
+for regenerated PDFs, EPUB and a KDP wrap. See [cover production notes](assets/production/README.md)
+for file names, print settings and the remaining front-cover resolution issue.
+
 ## What others say
 
 > This book offers a unique perspective essential for both enthusiasts and skeptics of blockchain technology. Regardless of personal beliefs, it provides context and enhances understanding, making it a must-read.

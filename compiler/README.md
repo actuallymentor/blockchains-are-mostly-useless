@@ -8,6 +8,8 @@ Markdown in `../book` → digital pdf, KDP paperback pdf, epub and Sendy email c
 | --- | --- |
 | `npm run dev` | Live preview of the paperback, refreshes on save. `npm run dev digital` for the digital layout |
 | `npm start` | Full build into `../build` |
+| `npm run covers` | Rebuild front/back/KDP covers from the existing print PDF |
+| `npm run covers:update` | Also refresh the checked-in cover previews |
 | `npm run verify` | Checks the build: toc pages and folios match, 6x9, fonts embedded, grayscale print |
 | `npm test` | Unit tests |
 | `npm run links` | Checks every link in the book (network). Bot-blocked sites are listed, dead links fail |
@@ -19,6 +21,7 @@ Env flags for `npm start`: `onlypdf`, `onlyepub`, `onlycsv` build one output, `d
 
 - Node from `.nvmrc` (`nvm use`), then `npm ci`
 - `ghostscript` (print pdf) and `poppler-utils` (`npm run verify`)
+- `/usr/bin/python3`, `python3-reportlab` and `python3-pypdf` (cover exports)
 - Or open the repo in the devcontainer, which has everything incl. `epubcheck`
 - First pdf build downloads the pinned Chrome that Vivliostyle renders with
 
@@ -43,6 +46,11 @@ Env flags for `npm start`: `onlypdf`, `onlyepub`, `onlycsv` build one output, `d
 Styles live in `modules/styles`: `style.scss` (everything), `pdf.scss` (+ paged media), `print.scss` (paperback only).
 
 ## Release
+
+The full build includes front/back cover exports, a page-count-specific KDP wrap,
+and `cover-preflight.json`; CI includes them in its downloadable artifacts.
+Review [cover production notes](../assets/production/README.md) before uploading.
+The selected C12-F front currently needs a higher-resolution master for print.
 
 1. Tag: `git tag v2.0.0 && git push --tags`
 2. CI builds, verifies, runs EPUBCheck and publishes a GitHub release with the pdfs and epub

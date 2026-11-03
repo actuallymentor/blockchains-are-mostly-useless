@@ -6,6 +6,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { execFileSync } from 'child_process'
 import { existsSync, statSync, readFileSync } from 'fs'
+import { createHash } from 'crypto'
 
 const build = `${ import.meta.dirname }/../../build`
 const title = 'Blockchains are mostly useless'
@@ -15,6 +16,8 @@ const file = suffix => `${ build }/${ title }${ suffix }`
 const run = ( command, ...args ) => execFileSync( command, args, { encoding: 'utf8', stdio: [ 'ignore', 'pipe', 'ignore' ] } )
 const pageText = ( pdf, page ) => run( 'pdftotext', '-f', page, '-l', page, '-layout', pdf, '-' )
 const squash = text => text.replace( /\s+/g, ' ' ).trim()
+const sha256 = bytes => createHash( 'sha256' ).update( bytes ).digest( 'hex' )
+const assets = `${ import.meta.dirname }/../../assets`
 
 // Toc lines look like "Chapter title - 12"
 const tocEntries = pdf => {
@@ -101,5 +104,76 @@ test( 'epub and email csvs exist', () => {
 	const csv = readFileSync( `${ build }/emails-courseTemplate.csv`, 'utf8' )
 	assert.match( csv, /^id,ares_id,from_name/ )
 	assert.ok( csv.split( '\n' ).length > 10 )
+
+} )
+
+test( 'the selected eight illustrations reach the pdf inputs and epub unchanged', () => {
+
+	const { illustrations } = JSON.parse( readFileSync( `${ assets }/illustrations/selected-art.json`, 'utf8' ) )
+	assert.deepEqual( illustrations.map( image => image.style_id ), [ 'S34', 'S39', 'S41', 'S43', 'S46', 'S51', 'S53', 'S57' ] )
+	const epub_images = run( 'unzip', '-Z1', file( '.epub' ) ).split( '\n' ).filter( name => /^OEBPS\/images\/.*\.png$/.test( name ) )
+	const epub_hashes = new Set( epub_images.map( name => sha256( execFileSync( 'unzip', [ '-p', file( '.epub' ), name ], { maxBuffer: 8 * 1024 * 1024 } ) ) ) )
+
+	for( const image of illustrations ) {
+		assert.equal( sha256( readFileSync( `${ assets }/illustrations/${ image.file }` ) ), image.sha256, `${ image.style_id } source differs from the selection` )
+		assert.equal( sha256( readFileSync( `${ build }/assets/illustrations/${ image.file }` ) ), image.sha256, `${ image.style_id } missing or stale in pdf inputs` )
+		assert.ok( epub_hashes.has( image.sha256 ), `${ image.style_id } missing or changed in epub` )
+	}
+
+} )
+
+test( 'the KDP wrap fits this exact print interior and embeds its fonts', () => {
+
+	const report = JSON.parse( readFileSync( `${ build }/cover-preflight.json`, 'utf8' ) )
+	const pages = Number( run( 'pdfinfo', file( '-print.pdf' ) ).match( /Pages:\s+(\d+)/ )[ 1 ] )
+	const kdp_pages = Math.ceil( pages / 2 ) * 2
+	const spine = kdp_pages * 0.0025
+	const expected_points = [ ( 12 + spine + 0.25 ) * 72, 9.25 * 72 ]
+	const info = run( 'pdfinfo', file( '-kdp-cover.pdf' ) )
+	const dimensions = info.match( /Page size:\s+([\d.]+) x ([\d.]+) pts/ ).slice( 1 ).map( Number )
+
+	assert.match( info, /Pages:\s+1\s/ )
+	assert.ok( dimensions.every( ( value, index ) => Math.abs( value - expected_points[ index ] ) < 0.01 ), 'wrap does not fit the current page count' )
+	assert.equal( report.interior_pages, pages )
+	assert.equal( report.kdp_pages, kdp_pages )
+	assert.equal( report.paper, 'cream' )
+	assert.equal( report.ink, 'black' )
+	assert.equal( report.interior_bleed, false )
+	assert.deepEqual( report.trim_inches, [ 6, 9 ] )
+	assert.equal( report.bleed_inches, 0.125 )
+	assert.ok( Math.abs( report.spine_inches - spine ) < 0.0001 )
+	assert.ok( report.wrap_inches.every( ( value, index ) => Math.abs( value * 72 - dimensions[ index ] ) < 0.01 ) )
+	assert.equal( report.interior_sha256, sha256( readFileSync( file( '-print.pdf' ) ) ), 'preflight belongs to a different interior build' )
+	assert.equal( report.front_sha256, sha256( readFileSync( `${ assets }/cover.png` ) ), 'preflight belongs to a different front cover' )
+	if( kdp_pages < 80 ) assert.equal( report.spine_text, false )
+
+	const fonts = run( 'pdffonts', file( '-kdp-cover.pdf' ) ).split( '\n' ).slice( 2 ).filter( Boolean )
+	assert.ok( fonts.length > 0, 'back-cover typography must be present' )
+	assert.ok( fonts.every( row => /\s(yes)\s+(yes|no)\s+(yes|no)\s+\d+\s+\d+\s*$/.test( row ) ), 'cover has unembedded fonts' )
+
+} )
+
+test( 'cover exports exist and preflight distinguishes native detail from raster DPI', () => {
+
+	const report = JSON.parse( readFileSync( `${ build }/cover-preflight.json`, 'utf8' ) )
+	const source = readFileSync( `${ assets }/cover.png` )
+	const pixels = [ source.readUInt32BE( 16 ), source.readUInt32BE( 20 ) ]
+	const native_ppi = Math.min( pixels[ 0 ] / 6, pixels[ 1 ] / 9 )
+
+	assert.equal( report.selected_front, 'C12-F' )
+	assert.deepEqual( report.front_source_pixels, pixels )
+	assert.ok( Math.abs( report.front_native_ppi - native_ppi ) < 0.01, 'native PPI must describe the source, not the enlarged export' )
+	assert.equal( report.raster_export_ppi, 300 )
+	if( native_ppi < 300 ) assert.ok( report.warnings.some( warning => /below 300 PPI/.test( warning ) ), 'low native resolution needs an explicit warning' )
+
+	for( const suffix of [ '-front-cover.pdf', '-front-cover.png', '-front-cover.jpg', '-back-cover.pdf', '-back-cover.png', '-kdp-cover.png', '-kdp-cover.jpg' ] ) {
+		assert.ok( statSync( file( suffix ) ).size > 10_000, `${ suffix } missing or empty` )
+	}
+
+	for( const suffix of [ '-front-cover', '-back-cover' ] ) {
+		const info = run( 'pdfinfo', file( `${ suffix }.pdf` ) )
+		assert.match( info, /Pages:\s+1\s/ )
+		assert.match( info, /Page size:\s+432 x 648 pts/ )
+	}
 
 } )
